@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Contacto', 'Teléfono, correo, WhatsApp y ubicación de Droguería y Variedades Los Tres Hermanos.')}"></head>
+<body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido">
+    <section class="cabecera contenedor">
+      <nav class="migas revelar" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Contacto</span></nav>
+      <h1 class="titulo-pagina revelar">Estamos aquí para ayudarte</h1>
+      <p class="cabecera-texto revelar">Estamos en Arjona, Bolívar, listos para atenderte.</p>
+    </section>
+
+    <section class="contenedor contacto">
+      <div class="contacto-col">
+        <div class="contacto-canales" data-escalonar>
+          <a href="tel:+573225065554" class="canal">
+            <span class="canal-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#telefono"/></svg></span>
+            <div><small>Teléfono</small><strong>+57 322 506 5554</strong></div>
+            <svg class="ic canal-flecha" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
+          </a>
+          <a href="https://wa.me/573225065554" target="_blank" rel="noopener" class="canal" id="btn-whatsapp-directo">
+            <span class="canal-icono canal-icono--verde"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg></span>
+            <div><small>WhatsApp</small><strong>Escríbenos ahora</strong></div>
+            <svg class="ic canal-flecha" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
+          </a>
+          <a href="mailto:diazpajaro1208@gmail.com" class="canal">
+            <span class="canal-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#correo"/></svg></span>
+            <div><small>Correo</small><strong>diazpajaro1208@gmail.com</strong></div>
+            <svg class="ic canal-flecha" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
+          </a>
+          <a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="canal">
+            <span class="canal-icono canal-icono--vino"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg></span>
+            <div><small>Dirección</small><strong>Diagonal 52 50A-755, Arjona</strong></div>
+            <svg class="ic canal-flecha" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
+          </a>
+        </div>
+
+        <form id="form-contacto" class="tarjeta contacto-form revelar">
+          <h2>Envíanos un mensaje</h2>
+          <div class="rejilla-form">
+            <div class="campo"><label for="f-nombre">Tu nombre *</label><input id="f-nombre" type="text" placeholder="Ej: María González" autocomplete="name" required></div>
+            <div class="campo"><label for="f-asunto">Asunto</label><input id="f-asunto" type="text" placeholder="Ej: Consulta de medicamento"></div>
+            <div class="campo todo"><label for="f-mensaje">Mensaje *</label><textarea id="f-mensaje" rows="4" placeholder="Escribe tu consulta aquí..." required></textarea></div>
+          </div>
+          <button type="submit" class="btn btn--primario btn--bloque"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg> Enviar por WhatsApp</button>
+        </form>
+      </div>
+
+      <div class="mapa-card revelar">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3930.123456!2d-75.3494!3d10.2531!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDE1JzExLjIiTiA3NcKwMjAnNTcuOCJX!5e0!3m2!1ses!2sco!4v1234567890!5m2!1ses!2sco&amp;q=Diagonal+52+50A-755+Arjona+Bolivar+Colombia"
+          allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          title="Droguería Los Tres Hermanos, Diagonal 52 50A-755, Arjona, Bolívar"></iframe>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn btn--secundario btn--sm mapa-boton">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg> Ver en Google Maps
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    document.getElementById('btn-whatsapp-directo')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const msg = '¡Hola! Me comunico desde la página web de la Droguería Los Tres Hermanos. Quisiera hacerles una consulta.';
+      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+    });
+
+    document.getElementById('form-contacto')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nombre  = document.getElementById('f-nombre').value.trim();
+      const mensaje = document.getElementById('f-mensaje').value.trim();
+      const asunto  = document.getElementById('f-asunto').value.trim();
+
+      if (!nombre || !mensaje) {
+        Toast.mostrar('Por favor completa todos los campos.');
+        return;
+      }
+
+      const msg =
+        `📩 *MENSAJE DESDE LA WEB*\n` +
+        `👤 Nombre: *${nombre}*\n` +
+        `📋 Asunto: ${asunto || 'Sin asunto'}\n\n` +
+        `💬 Mensaje:\n${mensaje}`;
+
+      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+      this.reset();
+      Toast.mostrar('Mensaje enviado por WhatsApp');
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+    });
+  </script>
+</body>
+</html>

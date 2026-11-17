@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: cabeza('Panel')}"></head>
+<body class="panel" th:attr="data-permisos=${perfil.permisosComoTexto()}">
+  <div th:replace="~{fragments/admin :: lateral}"></div>
+  <th:block th:replace="~{fragments/admin :: velo}"></th:block>
+
+  <div class="panel-principal">
+    <header th:replace="~{fragments/admin :: superior('Resumen')}"></header>
+
+    <main class="panel-contenido" id="contenido">
+
+      <section class="seccion activa" id="sec-resumen" aria-labelledby="titulo-resumen">
+        <div class="pagina-cabeza">
+          <div>
+            <p class="saludo" id="saludo">Hola</p>
+            <h1 id="titulo-resumen">Resumen de la droguería</h1>
+          </div>
+          <span class="insignia insignia--azul" th:text="${perfil.rolNombre()}">Rol</span>
+        </div>
+
+        <nav class="accesos-rapidos" aria-label="Accesos rápidos">
+          <a class="btn btn--primario btn--sm" th:href="@{/admin/productos/nuevo}" th:if="${perfil.puede('products.create')}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#mas"/></svg> Nuevo producto</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin#solicitudes}" th:if="${perfil.operaPagos()}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tarjeta"/></svg> Revisar pagos</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin#pedidos}" th:if="${perfil.vePedidos()}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#recibo"/></svg> Ver pedidos</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin/productos}" th:if="${perfil.veProductos()}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#capsula"/></svg> Consultar productos</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin#crear-cliente}" th:if="${perfil.puede('customers.create')}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuario-mas"/></svg> Crear cliente</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin/accesos}" th:if="${perfil.gestionaAccesos()}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#llave"/></svg> Usuarios y permisos</a>
+        </nav>
+
+        <div class="rejilla-kpi" id="stats-grid">
+          <article class="kpi" th:if="${perfil.veProductos()}"><strong class="kpi-valor" id="stat-productos">0</strong><span class="kpi-etiqueta">Productos publicados</span></article>
+          <article class="kpi" th:if="${perfil.operaClientes()}"><strong class="kpi-valor" id="stat-clientes">0</strong><span class="kpi-etiqueta">Clientes registrados</span></article>
+          <article class="kpi" th:if="${perfil.operaClientes()}"><strong class="kpi-valor" id="stat-activos">0</strong><span class="kpi-etiqueta">Planes activos</span></article>
+          <article class="kpi" th:if="${perfil.operaPagos()}"><strong class="kpi-valor" id="stat-pendientes">0</strong><span class="kpi-etiqueta">Pagos pendientes</span></article>
+          <article class="kpi" th:if="${perfil.operaPagos()}"><strong class="kpi-valor" id="stat-aprobados">0</strong><span class="kpi-etiqueta">Pagos aprobados</span></article>
+          <article class="kpi" th:if="${perfil.puede('sales.view')}"><strong class="kpi-valor" id="stat-pedidos">0</strong><span class="kpi-etiqueta">Pedidos por atender</span></article>
+          <article class="kpi" th:if="${perfil.puede('sales.view')}"><strong class="kpi-valor num" id="stat-ventas-hoy">$0</strong><span class="kpi-etiqueta">Ventas entregadas hoy</span></article>
+        </div>
+
+        <div class="rejilla-graficas" th:if="${perfil.operaPagos()}">
+          <article class="tarjeta revelar">
+            <div class="tarjeta-cabeza"><h2>Estado de las solicitudes</h2></div>
+            <div class="tarjeta-cuerpo" id="grafica-estados"></div>
+          </article>
+          <article class="tarjeta revelar">
+            <div class="tarjeta-cabeza"><h2>Solicitudes por plan</h2></div>
+            <div class="tarjeta-cuerpo" id="grafica-planes"></div>
+          </article>
+        </div>
+
+        <article class="tarjeta revelar" th:if="${perfil.operaPagos()}">
+          <div class="tarjeta-cabeza"><h2>Solicitudes pendientes recientes</h2></div>
+          <div id="tabla-recientes-wrap"></div>
+        </article>
+
+        <article class="tarjeta revelar" th:if="${perfil.operaPagos() or perfil.puede('sales.view')}">
+          <div class="tarjeta-cabeza"><h2>Actividad reciente</h2></div>
+          <div class="tarjeta-cuerpo" id="actividad-reciente"></div>
+        </article>
+
+        <section class="revelar" th:unless="${perfil.operaPagos() or perfil.operaClientes()}" aria-labelledby="titulo-mis-modulos">
+          <h2 id="titulo-mis-modulos" class="subtitulo-panel">Tus módulos</h2>
+          <div class="rejilla-modulos">
+            <a class="tarjeta tarjeta--viva modulo-acceso" th:each="m : ${perfil.modulos()}" th:href="@{${m.ruta}}">
+              <span class="kpi-icono"><svg class="ic" aria-hidden="true"><use th:href="'/img/iconos.svg#' + ${m.icono}"/></svg></span>
+              <h3 th:text="${m.nombre}">Módulo</h3>
+              <p th:text="${m.descripcion}">Descripción</p>
+              <span class="insignia insignia--aviso">En desarrollo</span>
+            </a>
+          </div>
+        </section>
+      </section>
+
+      <section class="seccion" id="sec-pedidos" th:if="${perfil.vePedidos()}" aria-labelledby="titulo-pedidos">
+        <div class="pagina-cabeza"><div><h1 id="titulo-pedidos">Pedidos</h1><p>Pedidos que hacen los clientes en la tienda en línea. Confírmalos con el cliente, prepáralos y márcalos como entregados al recibir el pago.</p></div></div>
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2>Todos los pedidos <span class="insignia" id="total-pedidos">0</span></h2>
+            <div class="filtros-tabla">
+              <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-ped">Filtrar pedidos</label><input type="search" id="busca-ped" placeholder="Cliente o número de pedido" oninput="renderPedidos()"></div>
+              <label class="solo-lector" for="filtro-entrega">Entrega</label>
+              <select id="filtro-entrega" onchange="renderPedidos()"><option value="">Toda entrega</option><option value="domicilio">Domicilio</option><option value="tienda">Recoger en tienda</option></select>
+              <label class="solo-lector" for="filtro-estado">Estado</label>
+              <select id="filtro-estado" onchange="renderPedidos()"><option value="">Todo estado</option><option value="pendiente">Pendientes</option><option value="en_proceso">En preparación</option><option value="entregado">Entregados</option><option value="cancelado">Anulados</option></select>
+            </div>
+          </div>
+          <div id="tabla-pedidos-wrap"></div>
+        </article>
+      </section>
+
+      <section class="seccion" id="sec-solicitudes" th:if="${perfil.operaPagos()}" aria-labelledby="titulo-solicitudes">
+        <div class="pagina-cabeza"><h1 id="titulo-solicitudes">Solicitudes de pago</h1></div>
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2>Todas las solicitudes</h2>
+            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-sol">Filtrar solicitudes</label><input class="input-buscar" type="search" placeholder="Nombre, correo o referencia" oninput="filtrarSolicitudes(this.value)" id="busca-sol"></div>
+          </div>
+          <div id="tabla-solicitudes-wrap"></div>
+        </article>
+      </section>
+
+      <section class="seccion" id="sec-clientes" th:if="${perfil.operaClientes()}" aria-labelledby="titulo-clientes">
+        <div class="pagina-cabeza"><h1 id="titulo-clientes">Clientes registrados</h1></div>
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2>Búsqueda de clientes</h2>
+            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-cli">Filtrar clientes</label><input class="input-buscar" type="search" placeholder="Nombre, correo o teléfono" oninput="filtrarClientes(this.value)" id="busca-cli"></div>
+          </div>
+          <div id="tabla-clientes-wrap"></div>
+        </article>
+      </section>
+
+      <section class="seccion" id="sec-crear-cliente" th:if="${perfil.puede('customers.create')}" aria-labelledby="titulo-crear-cliente">
+        <div class="pagina-cabeza"><h1 id="titulo-crear-cliente">Crear nuevo cliente</h1></div>
+        <article class="tarjeta form-card">
+          <div class="tarjeta-cuerpo">
+            <div class="msg-form" id="msg-crear-cli" role="status"></div>
+            <div class="rejilla-form">
+              <div class="campo"><label for="nc-nombre">Nombre completo *</label><input type="text" id="nc-nombre" placeholder="Juan García"></div>
+              <div class="campo"><label for="nc-correo">Correo electrónico *</label><input type="email" id="nc-correo" placeholder="cliente@ejemplo.com"></div>
+              <div class="campo"><label for="nc-telefono">Teléfono *</label><input type="tel" id="nc-telefono" placeholder="300 123 4567" autocomplete="off"></div>
+              <div class="campo"><label for="nc-direccion">Dirección *</label><input type="text" id="nc-direccion" placeholder="Barrio, calle y número, Arjona" autocomplete="off"></div>
+              <div class="campo todo"><label for="nc-clave">Contraseña temporal *</label><input type="text" id="nc-clave" placeholder="Mín. 8 caracteres" autocomplete="off"><p class="campo-ayuda">Entrégasela al cliente y pídele cambiarla en «Mi cuenta».</p></div>
+              <label class="campo todo casilla"><input type="checkbox" id="nc-datos"> El cliente autorizó el tratamiento de sus datos personales (Ley 1581 de 2012).</label>
+            </div>
+            <div class="form-acciones">
+              <button class="btn btn--primario" type="button" onclick="crearCliente(this)">Crear cliente</button>
+              <button class="btn btn--fantasma" type="button" onclick="limpiarFormCliente()">Limpiar</button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="seccion" id="sec-activar-plan" th:if="${perfil.puede('subscriptions.activate')}" aria-labelledby="titulo-activar">
+        <div class="pagina-cabeza"><div><h1 id="titulo-activar">Activar plan en tienda</h1><p>Busca al cliente y activa su plan después de recibir el pago en efectivo.</p></div></div>
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2>Buscar cliente</h2>
+            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-act">Buscar cliente</label><input class="input-buscar" type="search" placeholder="Nombre, correo o teléfono" oninput="buscarClienteActivar()" id="busca-act"></div>
+          </div>
+          <div id="tabla-busca-activar"></div>
+        </article>
+
+        <article class="tarjeta form-card" id="panel-activacion" style="display:none;">
+          <div class="tarjeta-cabeza"><h2>Activar plan para: <span id="activar-cliente-nombre" class="resaltado"></span></h2></div>
+          <div class="tarjeta-cuerpo">
+            <div class="msg-form" id="msg-activar" role="status"></div>
+            <p class="campo-etiqueta">Selecciona el plan</p>
+            <div class="plan-select-wrap" id="planes-activar">
+              <button class="plan-opt" type="button" data-accion="elegir-plan" data-plan="basico" aria-pressed="false"><strong>Básico</strong><small>$9.900 · 3%</small></button>
+              <button class="plan-opt" type="button" data-accion="elegir-plan" data-plan="estandar" aria-pressed="false"><strong>Estándar</strong><small>$19.900 · 5%</small></button>
+              <button class="plan-opt" type="button" data-accion="elegir-plan" data-plan="regular" aria-pressed="false"><strong>Regular</strong><small>$29.900 · 10%</small></button>
+              <button class="plan-opt" type="button" data-accion="elegir-plan" data-plan="premium" aria-pressed="false"><strong>Premium</strong><small>$39.900 · 15% · domicilio gratis</small></button>
+            </div>
+            <div class="campo"><label for="activar-nota">Nota de pago (efectivo)</label><input type="text" id="activar-nota" placeholder="Ej: Pagó en efectivo $29.900"></div>
+            <div class="form-acciones">
+              <button class="btn btn--primario" type="button" onclick="activarPlanAdmin(this)"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg> Activar plan</button>
+              <button class="btn btn--fantasma" type="button" onclick="cancelarActivacion()">Cancelar</button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-velo" id="modal-solicitud" role="dialog" aria-modal="true" aria-labelledby="modal-solicitud-titulo" th:if="${perfil.operaPagos()}">
+    <div class="modal">
+      <div class="modal-cabeza">
+        <h2 id="modal-solicitud-titulo">Detalle de solicitud</h2>
+        <button class="btn-icono" type="button" onclick="cerrarModal()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button>
+      </div>
+      <div class="modal-cuerpo" id="modal-body-sol"></div>
+      <div class="modal-pie" th:if="${perfil.puede('subscriptions.approve')}">
+        <button class="btn btn--peligro" type="button" onclick="accionSolicitudModal('rechazado')">Rechazar</button>
+        <button class="btn btn--exito" type="button" onclick="accionSolicitudModal('aprobado')"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg> Aprobar y activar</button>
+      </div>
+    </div>
+  </div>
+
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/experiencia.js}"></script>
+  <script th:src="@{/js/panel.js}"></script>
+  <script th:src="@{/js/catalogo.js}" th:if="${perfil.veProductos()}"></script>
+  <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

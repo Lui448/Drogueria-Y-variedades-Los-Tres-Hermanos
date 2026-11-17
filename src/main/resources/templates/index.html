@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Inicio', 'Droguería y Variedades Los Tres Hermanos: busca tus medicamentos y productos en Arjona, Bolívar, y pide por WhatsApp.')}"></head>
+<body class="inicio buscador-grande-visible">
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido">
+    <section class="portada" data-loop aria-labelledby="portada-titulo">
+      <div class="portada-fondo" aria-hidden="true">
+        <svg class="ecg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path pathLength="1" d="M0 70H250l18-10 16 10h40l12 16 20-74 22 92 14-34h60l16-12 18 12H690l18-10 16 10h40l12 16 20-74 22 92 14-34h368"/></svg>
+      </div>
+
+      <div class="contenedor portada-interior">
+        <div class="portada-columna">
+          <p class="portada-badge entra"><span class="punto-vivo"></span>Atendiendo en Arjona</p>
+          <h1 id="portada-titulo" class="entra" style="--i:1">Lo que necesitas, más <span class="palabra">cerca<svg viewBox="0 0 120 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 8C30 2 88 2 117 7"/></svg></span> de ti.</h1>
+          <p class="portada-texto entra" style="--i:2">Busca tu medicamento, elige la presentación y envía tu pedido por WhatsApp. Pagas en efectivo al recibirlo.</p>
+
+          <form class="buscador-global buscador-grande entra" style="--i:3" id="buscador-inicio" role="search" th:action="@{/medicamentos}" method="get" data-buscador>
+            <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg>
+            <label class="solo-lector" for="busqueda-inicio">Buscar medicamentos y productos</label>
+            <input type="search" id="busqueda-inicio" name="q" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="sugerencias-inicio" placeholder="¿Qué estás buscando?" autocomplete="off">
+            <button class="buscador-limpiar" type="button" aria-label="Borrar la búsqueda" hidden><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button>
+            <button class="btn btn--primario buscador-enviar" type="submit">Buscar</button>
+            <div class="sugerencias" id="sugerencias-inicio" role="listbox" aria-label="Sugerencias" hidden></div>
+          </form>
+
+          <div class="portada-acciones entra" style="--i:4">
+            <a th:href="@{/medicamentos}" class="btn btn--primario btn--lg">Ver medicamentos <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+            <a th:href="@{/variedades}" class="btn btn--secundario btn--lg">Explorar variedades</a>
+          </div>
+        </div>
+
+        <div class="portada-ilustracion" id="portada-ilustracion">
+          <div class="escena" aria-hidden="true">
+            <span class="anillo"></span><span class="anillo anillo--2"></span><span class="anillo anillo--3"></span>
+            <div class="capa" style="--d:10">
+              <svg class="escena-cruz" viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/></svg>
+            </div>
+            <div class="capa" style="--d:26">
+              <svg class="escena-capsula" viewBox="0 0 240 110">
+                <rect x="4" y="4" width="232" height="102" rx="51" fill="#fff"/>
+                <path d="M120 12H59a43 43 0 0 0 0 86h61z" fill="#2B4A9E"/>
+                <path d="M120 12h61a43 43 0 0 1 0 86h-61z" fill="#C8102E"/>
+                <rect x="38" y="26" width="58" height="10" rx="5" fill="#fff" opacity=".55"/>
+                <rect x="140" y="26" width="46" height="10" rx="5" fill="#fff" opacity=".4"/>
+              </svg>
+            </div>
+            <div class="capa particula" style="--d:46;--x:6%;--y:12%;--dur:7s"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#fff"/><path d="M4 12h16" stroke="#C8102E" stroke-width="2.500"/></svg></div>
+            <div class="capa particula" style="--d:34;--x:82%;--y:6%;--dur:9s"><svg viewBox="0 0 24 24"><path d="M12 1c4 6 8 10 8 14a8 8 0 0 1-16 0c0-4 4-8 8-14z" fill="#E6C26E"/></svg></div>
+            <div class="capa particula" style="--d:60;--x:90%;--y:58%;--dur:6s"><svg viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z" fill="#fff"/></svg></div>
+            <div class="capa particula" style="--d:28;--x:2%;--y:66%;--dur:8s"><svg viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z" fill="#E6C26E"/></svg></div>
+            <div class="capa particula particula--extra" style="--d:52;--x:68%;--y:86%;--dur:10s"><svg viewBox="0 0 48 24"><rect x="1" y="1" width="46" height="22" rx="11" fill="#fff"/><path d="M24 1h12a11 11 0 0 1 0 22H24z" fill="#E8122F"/></svg></div>
+            <div class="capa particula particula--extra" style="--d:40;--x:26%;--y:90%;--dur:7.500s"><svg viewBox="0 0 24 24"><path d="M12 1c4 6 8 10 8 14a8 8 0 0 1-16 0c0-4 4-8 8-14z" fill="#fff"/></svg></div>
+          </div>
+          <p class="portada-frase">Tu salud, nuestra prioridad</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="hechos" data-loop aria-label="Cómo funciona la compra">
+      <div class="contenedor">
+        <ul class="hechos-pista" id="hechos-pista" data-escalonar>
+          <li><span class="hecho-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg></span>Pedido por WhatsApp</li>
+          <li><span class="hecho-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#camion"/></svg></span>Domicilio en Arjona</li>
+          <li><span class="hecho-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg></span>Recoge en tienda</li>
+          <li><span class="hecho-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#billete"/></svg></span>Efectivo al recibir</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="bloque contenedor" aria-labelledby="titulo-categorias">
+      <header class="encabezado revelar">
+        <h2 id="titulo-categorias" class="titulo-seccion">Encuentra fácilmente tus productos</h2>
+      </header>
+      <div class="cat-grupo-titulo revelar"><h3>Medicamentos</h3><a th:href="@{/medicamentos}" class="enlace-flecha">Ver todos <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a></div>
+      <ul class="cat-grid" id="indice-medicamentos" data-escalonar></ul>
+      <div class="cat-mas-wrap"><button type="button" class="btn btn--secundario btn--sm cat-mas" data-lista="indice-medicamentos" aria-controls="indice-medicamentos" aria-expanded="false" hidden></button></div>
+      <div class="cat-grupo-titulo revelar"><h3>Variedades</h3><a th:href="@{/variedades}" class="enlace-flecha">Ver todas <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a></div>
+      <ul class="cat-grid" id="indice-variedades" data-escalonar></ul>
+      <div class="cat-mas-wrap"><button type="button" class="btn btn--secundario btn--sm cat-mas" data-lista="indice-variedades" aria-controls="indice-variedades" aria-expanded="false" hidden></button></div>
+    </section>
+
+    <section class="bloque bloque--tono" aria-labelledby="titulo-explorar">
+      <div class="contenedor">
+        <header class="encabezado encabezado--fila revelar">
+          <h2 id="titulo-explorar" class="titulo-seccion">Para empezar a explorar</h2>
+        </header>
+        <div class="explorar-tabs revelar">
+          <div class="pestanas" role="tablist" aria-label="Tipo de producto">
+            <button class="tab activo" type="button" role="tab" id="tab-exp-med" aria-selected="true" aria-controls="exp-med" data-explorar="exp-med">Medicamentos</button>
+            <button class="tab" type="button" role="tab" id="tab-exp-var" aria-selected="false" aria-controls="exp-var" tabindex="-1" data-explorar="exp-var">Variedades</button>
+          </div>
+          <span class="tabs-indicador" id="tabs-indicador" aria-hidden="true"></span>
+        </div>
+        <div class="explorar-panel medicamentos-grid" id="exp-med" role="tabpanel" aria-labelledby="tab-exp-med">
+          <div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div>
+        </div>
+        <div class="explorar-panel variedades-grid" id="exp-var" role="tabpanel" aria-labelledby="tab-exp-var" hidden></div>
+      </div>
+    </section>
+
+    <section class="bloque contenedor guia-compra" id="como-comprar" data-loop aria-labelledby="titulo-guia">
+      <header class="encabezado revelar">
+        <h2 id="titulo-guia" class="titulo-seccion">¿Cómo comprar?</h2>
+        <p>Cuatro pasos, desde la búsqueda hasta recibir tu pedido.</p>
+      </header>
+      <div class="guia-ruta" id="guia-ruta">
+        <div class="guia-linea" aria-hidden="true"><div class="guia-linea-recorte"><div class="guia-linea-puntos"></div></div></div>
+        <ol class="guia-pasos-lista">
+          <li class="paso-guia"><span class="paso-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><span class="paso-num">1</span></span><div><h3>Busca</h3><p>Escribe el nombre, la marca o lo que necesitas.</p></div></li>
+          <li class="paso-guia"><span class="paso-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#capsula"/></svg><span class="paso-num">2</span></span><div><h3>Elige la presentación</h3><p>Abre el producto y elige presentación, concentración y marca.</p></div></li>
+          <li class="paso-guia"><span class="paso-icono paso-icono--wa"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg><span class="paso-num">3</span></span><div><h3>Pide por WhatsApp</h3><p>Con tu cuenta gratis, elige tienda o domicilio y envía tu pedido.</p></div></li>
+          <li class="paso-guia"><span class="paso-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#billete"/></svg><span class="paso-num">4</span></span><div><h3>Paga al recibir</h3><p>Pagas en efectivo cuando tienes tu pedido en las manos.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="bloque bloque--tono" aria-labelledby="titulo-variedades">
+      <div class="contenedor franja-variedades">
+        <div class="revelar revelar--izq">
+          <h2 id="titulo-variedades" class="titulo-seccion">Tu bienestar también está en los pequeños detalles</h2>
+          <p>Perfumes, útiles escolares y cuidado personal, en el mismo lugar donde compras tus medicamentos.</p>
+          <a th:href="@{/variedades}" class="btn btn--secundario">Ver variedades <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+        </div>
+        <div class="vitrina revelar revelar--der" id="vitrina-variedades"></div>
+      </div>
+    </section>
+
+    <section class="bloque contenedor" aria-labelledby="titulo-planes">
+      <header class="encabezado encabezado--fila revelar">
+        <div>
+          <h2 id="titulo-planes" class="titulo-seccion">Si compras cada mes, un plan te ayuda a ahorrar</h2>
+          <p>El descuento se aplica a todos los medicamentos y variedades.</p>
+        </div>
+        <a th:href="@{/suscripciones}" class="btn btn--secundario">Comparar planes <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+      </header>
+      <ul class="planes-lista" data-escalonar>
+        <li><a th:href="@{/suscripciones}" class="plan-linea"><strong>Básico</strong><span>3% de descuento</span><span class="num">$9.900 al mes</span><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg></a></li>
+        <li><a th:href="@{/suscripciones}" class="plan-linea"><strong>Estándar</strong><span>5% de descuento</span><span class="num">$39.900 al mes</span><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg></a></li>
+        <li><a th:href="@{/suscripciones}" class="plan-linea"><strong>Regular</strong><span>10% de descuento y domicilio prioritario</span><span class="num">$29.900 al mes</span><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg></a></li>
+        <li><a th:href="@{/suscripciones}" class="plan-linea"><strong>Premium</strong><span>15% de descuento y domicilio gratis</span><span class="num">$39.900 al mes</span><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg></a></li>
+      </ul>
+    </section>
+
+    <section class="bloque bloque--tono" aria-labelledby="titulo-visita">
+      <div class="contenedor visita">
+        <div class="revelar revelar--izq">
+          <h2 id="titulo-visita" class="titulo-seccion">También te atendemos en la droguería</h2>
+          <dl class="visita-datos">
+            <div><dt>Dirección</dt><dd>Diagonal 52 50A-755, Arjona, Bolívar</dd></div>
+            <div><dt>Lunes a viernes</dt><dd>7:00 AM – 9:00 PM</dd></div>
+            <div><dt>Sábados</dt><dd>7:00 AM – 8:00 PM</dd></div>
+            <div><dt>Domingos</dt><dd>8:00 AM – 6:00 PM</dd></div>
+          </dl>
+          <div class="visita-acciones">
+            <a th:href="@{/contacto}" class="btn btn--primario">Cómo llegar</a>
+            <a th:href="@{/servicios}" class="btn btn--secundario">Ver servicios</a>
+          </div>
+        </div>
+        <img class="pieza-marca revelar revelar--der" th:src="@{/img/marca/pieza-marca-3h.jpeg}" alt="Pieza de marca de Droguería Los Tres Hermanos: el símbolo 3H con una cápsula, el lema Calidad y servicio y la frase Tu salud, nuestra prioridad." width="1214" height="1296" loading="lazy">
+      </div>
+    </section>
+  </main>
+
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script th:src="@{/js/inicio.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const esc = Seguridad.esc;
+      const $ = (id) => document.getElementById(id);
+
+      const ICONOS = { analgesicos: 'capsula', antiinflamatorios: 'brote', antibioticos: 'escudo', antihistaminicos: 'hospital', otros: 'caja', perfumes: 'estrella', utiles: 'lapiz', cuidado: 'corazon' };
+      const COLORES = ['azul', 'azul-claro', 'rojo'];
+      const tarjetas = (tipo, productos, ruta) => CATEGORIAS.filter(c => c.tipo === tipo).filter(c => productos.some(p => p.cat === c.id)).map((c, i) => {
+        const n = productos.filter(p => p.cat === c.id).length;
+        return `<li><a class="cat-card cat-card--${COLORES[i % COLORES.length]}" href="${ruta}?cat=${encodeURIComponent(c.id)}">
+          <span class="cat-icono">${Experiencia.icono(ICONOS[c.id] || 'etiqueta')}</span>
+          <span class="cat-nombre">${esc(c.nombre)}</span>
+          <span class="cat-cuenta"><span data-contar="${n}">${n}</span> producto${n === 1 ? '' : 's'}</span>
+        </a></li>`;
+      }).join('');
+      $('indice-medicamentos').innerHTML = tarjetas('medicamento', MEDICAMENTOS, '/medicamentos');
+      $('indice-variedades').innerHTML = tarjetas('variedad', VARIEDADES, '/variedades');
+
+      const VISIBLES = 6;
+      document.querySelectorAll('.cat-mas').forEach(boton => {
+        const lista = $(boton.dataset.lista);
+        const extras = [...lista.children].slice(VISIBLES);
+        if (!extras.length) return;
+        const pintar = (abierta) => {
+          extras.forEach(li => { li.hidden = !abierta; });
+          boton.setAttribute('aria-expanded', String(abierta));
+          boton.innerHTML = (abierta ? 'Ver menos' : `Ver más (${extras.length})`) +
+            ` ${Experiencia.icono('chevron-abajo')}`;
+        };
+        pintar(false);
+        boton.hidden = false;
+        boton.addEventListener('click', () => {
+          const abrir = boton.getAttribute('aria-expanded') !== 'true';
+          pintar(abrir);
+          if (!abrir) lista.scrollIntoView({ behavior: Experiencia.sinMovimiento ? 'auto' : 'smooth', block: 'nearest' });
+          else extras[0].querySelector('a')?.focus({ preventScroll: true });
+        });
+      });
+
+      $('exp-med').innerHTML = MEDICAMENTOS.slice(0, 4).map(Ficha.tarjetaMedicamento).join('');
+      $('exp-var').innerHTML = VARIEDADES.slice(0, 4).map(Ficha.tarjetaVariedad).join('');
+      $('vitrina-variedades').innerHTML = VARIEDADES.slice(0, 3).map(v => `<a href="/variedades?producto=${v.id}" aria-label="${esc(v.nombre)}">${Arte.variedad(v)}</a>`).join('');
+
+      let vista = true;
+      try { vista = !!localStorage.getItem('lth_guia_vista'); } catch (e) {}
+      if (!vista) {
+        const av = document.createElement('aside');
+        av.className = 'guia-invitacion no-imprimir';
+        av.setAttribute('aria-label', 'Guía de compra');
+        av.innerHTML = `<a href="#como-comprar">¿Primera vez aquí?<small>Mira cómo hacer tu pedido</small></a><button class="btn-icono" type="button" aria-label="Cerrar">${Experiencia.icono('cerrar')}</button>`;
+        const marcar = () => { try { localStorage.setItem('lth_guia_vista', '1'); } catch (e) {} av.remove(); };
+        av.querySelector('a').addEventListener('click', marcar);
+        av.querySelector('button').addEventListener('click', marcar);
+        document.body.appendChild(av);
+      }
+
+      Inicio.iniciar();
+      Experiencia.revelar();
+      Experiencia.contadores();
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Finalizar pedido', 'Confirma tu pedido en Los Tres Hermanos.')}"></head>
+<body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido" class="contenedor checkout">
+    <ol class="pasos" aria-label="Progreso del pedido">
+      <li class="paso hecho"><span class="paso-circulo"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span><span>Carrito</span></li>
+      <li class="paso activo" aria-current="step"><span class="paso-circulo">2</span><span>Entrega</span></li>
+      <li class="paso"><span class="paso-circulo">3</span><span>Confirmación</span></li>
+    </ol>
+
+    <div class="checkout-layout">
+      <div class="checkout-principal entra" style="--i:0">
+        <h1>¿Cómo quieres recibir tu pedido?</h1>
+
+        <div class="alerta alerta--aviso alerta-invitado" id="alerta-invitado">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg>
+          <div>
+            <h2 id="invitado-titulo">Inicia sesión para hacer tu pedido</h2>
+            <p id="invitado-texto">Con tu cuenta la droguería recibe tu pedido, guardas tu historial y ves tu recibo. Crearla es gratis.</p>
+            <div class="alerta-acciones">
+              <a href="/registro?retorno=checkout" class="btn btn--primario btn--sm">Crear cuenta gratis</a>
+              <a href="/login?retorno=checkout" class="btn btn--secundario btn--sm">Ya tengo cuenta</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-entrega" id="panel-entrega">
+          <div class="modalidad-grid">
+            <div class="modalidad-card" id="card-tienda" role="button" aria-pressed="false" tabindex="0" onclick="seleccionarModalidad('tienda')">
+              <span class="modalidad-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg></span>
+              <h2>Recoger en tienda</h2>
+              <p>Tu pedido estará listo cuando llegues.</p>
+              <span class="modalidad-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
+            </div>
+            <div class="modalidad-card" id="card-domicilio" role="button" aria-pressed="false" tabindex="0" onclick="seleccionarModalidad('domicilio')">
+              <span class="modalidad-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#camion"/></svg></span>
+              <h2>Domicilio</h2>
+              <p>Te lo llevamos a tu dirección dentro de Arjona.</p>
+              <span class="modalidad-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
+            </div>
+          </div>
+
+          <div class="desplegable info-tienda" id="info-tienda">
+            <div class="alerta alerta--info">
+              <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg>
+              <div><strong>Tu pedido quedará listo en la droguería</strong><br>Dirección: Diagonal 52 50A-755, Arjona, Bolívar. Muestra el número de tu pedido al recogerlo.</div>
+            </div>
+          </div>
+          <div class="desplegable dir-domicilio" id="dir-domicilio">
+            <div class="campo">
+              <label for="input-direccion">Dirección de entrega</label>
+              <div class="campo-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg><input type="text" id="input-direccion" placeholder="Ej: Calle 5 #10-20, Barrio Centro" autocomplete="street-address"></div>
+              <p class="campo-ayuda">Escribe la dirección con el barrio y una referencia.</p>
+            </div>
+            <div class="ubicacion-domicilio">
+              <button class="btn btn--secundario btn--sm" type="button" id="btn-ubicacion"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg> Usar mi ubicación para calcular el domicilio</button>
+              <p class="campo-ayuda" id="estado-ubicacion" role="status">El valor depende de la distancia desde la droguería: $3.000 hasta 1 km y $1.000 por cada km adicional, hasta 8 km. Con el plan Premium el domicilio es gratis.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="resumen-panel entra" style="--i:2" aria-label="Resumen del pedido">
+        <h2>Resumen del pedido</h2>
+        <div class="resumen-items" id="resumen-items"></div>
+        <div class="resumen-total-row"><span>Subtotal</span><span id="res-subtotal">$0</span></div>
+        <div class="resumen-total-row" id="res-desc-row" hidden><span id="res-desc-etiqueta">Descuento</span><span id="res-descuento">-$0</span></div>
+        <div class="resumen-total-row" id="res-dom-row" hidden><span id="res-dom-etiqueta">Domicilio</span><span id="res-domicilio">Por confirmar</span></div>
+        <div class="resumen-total-final"><span>Total</span><strong id="res-total">$0</strong></div>
+        <p class="resumen-nota" id="nota-formula" hidden><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#documento"/></svg> Tu pedido tiene medicamentos que requieren fórmula médica. Tenla a mano al recibirlo.</p>
+        <p class="resumen-nota" id="nota-domicilio" hidden><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#camion"/></svg> <span id="nota-domicilio-texto">Comparte tu ubicación para ver el valor del domicilio, o la droguería te lo confirma al llamarte.</span></p>
+        <button class="btn btn--primario btn--lg btn--bloque" id="btn-confirmar" type="button" onclick="confirmarPedido()" disabled>
+          Confirmar pedido <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
+        </button>
+        <p class="resumen-nota"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#billete"/></svg> El pago se realiza en efectivo al recibir tu pedido.</p>
+      </aside>
+    </div>
+  </main>
+
+  <div class="toast-wrap" id="toast-wrap"></div>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    const WHATSAPP = 'https://wa.me/573225065554';
+    const cliente  = Cuenta.cliente();
+    const fmt      = window.formatPrecio;
+    let carrito    = Carrito.obtener();
+    let modalidadSel = null;
+    let enviando     = false;
+    let ubicacion    = null;
+    let domicilio    = null;
+
+    function toast(msg, ok=true) {
+      const wrap = document.getElementById('toast-wrap');
+      const el = document.createElement('div');
+      el.className = 'toast' + (ok ? '' : ' err');
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3500);
+    }
+
+    function bloquearEntrega() {
+      const panel = document.getElementById('panel-entrega');
+      document.getElementById('alerta-invitado').style.display = 'flex';
+      panel.style.opacity = '0.4';
+      panel.style.pointerEvents = 'none';
+      panel.setAttribute('aria-hidden', 'true');
+      panel.querySelectorAll('[tabindex], input').forEach(el => el.setAttribute('tabindex', '-1'));
+    }
+    if (!Cuenta.disponible()) {
+      document.getElementById('invitado-titulo').textContent = 'Envía tu pedido por WhatsApp';
+      document.getElementById('invitado-texto').textContent = 'Los pedidos en línea no están disponibles en este momento. Envíanos tu carrito por WhatsApp y te confirmamos precio y entrega.';
+      document.querySelector('#alerta-invitado .alerta-acciones').hidden = true;
+      bloquearEntrega();
+      const btn = document.getElementById('btn-confirmar');
+      btn.innerHTML = '<svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg> Enviar pedido por WhatsApp';
+      btn.disabled = !carrito.length;
+    } else if (!cliente) {
+      bloquearEntrega();
+    } else if (cliente.direccion) {
+      document.getElementById('input-direccion').value = cliente.direccion;
+    }
+
+    function renderResumen() {
+      const body = document.getElementById('resumen-items');
+      if (!carrito.length) {
+        body.innerHTML = '<div class="vacio"><h3>Tu carrito está vacío</h3><p>Agrega productos para hacer tu pedido.</p><a class="btn btn--secundario btn--sm" href="/medicamentos">Ver medicamentos</a></div>';
+        document.getElementById('btn-confirmar').disabled = true;
+        ['res-subtotal', 'res-total'].forEach(id => { document.getElementById(id).textContent = fmt(0); });
+        document.getElementById('res-desc-row').hidden = true;
+        document.querySelector('.checkout-principal h1').textContent = 'Tu carrito está vacío';
+        document.getElementById('panel-entrega').hidden = true;
+        document.getElementById('alerta-invitado').style.display = 'none';
+        return;
+      }
+      body.innerHTML = carrito.map(item => `
+        <div class="resumen-item">
+          <span class="resumen-item-nombre">${Seguridad.esc(item.nombre)}${item.detalle ? `<small>${Seguridad.esc(item.detalle)}</small>` : ''}</span>
+          <span class="resumen-item-qty">x${Seguridad.esc(item.cantidad)}</span>
+          <span class="resumen-item-precio num">${fmt(item.precio * item.cantidad)}</span>
+        </div>`).join('');
+      const subtotal = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+      const total    = Carrito.total();
+      document.getElementById('res-subtotal').textContent = fmt(subtotal);
+      const sus = Suscripcion.obtener();
+      const descRow = document.getElementById('res-desc-row');
+      descRow.hidden = !(sus && subtotal > total);
+      if (!descRow.hidden) {
+        document.getElementById('res-desc-etiqueta').textContent = `Plan ${sus.nombre} (${sus.descuento}%)`;
+        document.getElementById('res-descuento').textContent = '-' + fmt(subtotal - total);
+      }
+      pintarDomicilio(total);
+      const conFormula = carrito.some(i => i.tipo === 'medicamento'
+        && MEDICAMENTOS.some(m => m.formula && m.presentaciones.some(p => String(p.id) === String(i.presentacion))));
+      document.getElementById('nota-formula').hidden = !conFormula;
+    }
+
+    function seleccionarModalidad(tipo) {
+      if (!cliente || !Cuenta.disponible()) return;
+      modalidadSel = tipo;
+      ['tienda', 'domicilio'].forEach(m => {
+        const card = document.getElementById('card-' + m);
+        card.classList.toggle('seleccionado', tipo === m);
+        card.setAttribute('aria-pressed', String(tipo === m));
+      });
+      document.getElementById('info-tienda').classList.toggle('visible', tipo === 'tienda');
+      document.getElementById('dir-domicilio').classList.toggle('visible', tipo === 'domicilio');
+      document.getElementById('nota-domicilio').hidden = tipo !== 'domicilio';
+      document.getElementById('btn-confirmar').disabled = !carrito.length;
+      if (tipo === 'domicilio' && !domicilio) cotizar();
+      pintarDomicilio(Carrito.total());
+    }
+
+    const sus = Suscripcion.obtener();
+    async function cotizar() {
+      const q = ubicacion ? `?latitud=${ubicacion.latitud}&longitud=${ubicacion.longitud}` : '';
+      try {
+        domicilio = await Api.pedir('/api/domicilio' + q);
+        document.getElementById('estado-ubicacion').classList.remove('campo-error');
+      } catch (err) {
+        domicilio = null;
+        ubicacion = null;
+        const estado = document.getElementById('estado-ubicacion');
+        estado.textContent = err.message;
+        estado.classList.add('campo-error');
+      }
+      pintarDomicilio(Carrito.total());
+    }
+
+    function pintarDomicilio(total) {
+      const fila = document.getElementById('res-dom-row');
+      const nota = document.getElementById('nota-domicilio-texto');
+      const esDomicilio = modalidadSel === 'domicilio';
+      fila.hidden = !esDomicilio;
+      let costo = 0;
+      if (esDomicilio) {
+        const valor = document.getElementById('res-domicilio');
+        if (domicilio && domicilio.gratis) {
+          valor.textContent = 'Gratis';
+          nota.textContent = `Tu plan ${sus ? sus.nombre : 'Premium'} incluye el domicilio sin costo.`;
+        } else if (domicilio && domicilio.conUbicacion) {
+          costo = domicilio.costo;
+          valor.textContent = fmt(costo);
+          nota.textContent = `Distancia aproximada desde la droguería: ${String(domicilio.distanciaKm).replace('.', ',')} km.`;
+        } else {
+          valor.textContent = 'Por confirmar';
+          nota.textContent = 'Comparte tu ubicación para ver el valor del domicilio, o la droguería te lo confirma al llamarte.';
+        }
+      }
+      document.getElementById('res-total').textContent = fmt(total + costo);
+    }
+
+    document.getElementById('btn-ubicacion').addEventListener('click', () => {
+      const estado = document.getElementById('estado-ubicacion');
+      const boton = document.getElementById('btn-ubicacion');
+      if (!navigator.geolocation) { estado.textContent = 'Tu navegador no permite compartir la ubicación. La droguería te confirma el valor.'; return; }
+      boton.disabled = true;
+      estado.classList.remove('campo-error');
+      estado.textContent = 'Buscando tu ubicación…';
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        ubicacion = { latitud: pos.coords.latitude.toFixed(6), longitud: pos.coords.longitude.toFixed(6) };
+        await cotizar();
+        boton.disabled = false;
+        if (domicilio && domicilio.conUbicacion) {
+          estado.textContent = `Ubicación recibida (${String(domicilio.distanciaKm).replace('.', ',')} km de la droguería).`;
+        }
+      }, (error) => {
+        boton.disabled = false;
+        estado.classList.add('campo-error');
+        estado.textContent = error.code === 1
+          ? 'No diste permiso para usar tu ubicación. Puedes hacer el pedido igual: la droguería te confirma el valor del domicilio.'
+          : 'No pudimos obtener tu ubicación. Inténtalo de nuevo o haz el pedido: la droguería te confirma el valor.';
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    });
+    ['tienda', 'domicilio'].forEach(m => {
+      document.getElementById('card-' + m).addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); seleccionarModalidad(m); }
+      });
+    });
+
+    function pedirPorWhatsApp() {
+      const lineas = carrito.map(i => `• ${i.nombre}${i.detalle ? ' (' + i.detalle + ')' : ''} x${i.cantidad}`).join('\n');
+      const referencia = fmt(carrito.reduce((s, i) => s + i.precio * i.cantidad, 0));
+      const msg = `Hola, quiero hacer este pedido:\n${lineas}\n\nValor de referencia: ${referencia}`;
+      window.open(`${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+    }
+
+    async function confirmarPedido() {
+      carrito = Carrito.obtener();
+      if (!carrito.length) { toast('Tu carrito está vacío', false); renderResumen(); return; }
+      if (!Cuenta.disponible()) { pedirPorWhatsApp(); return; }
+      if (!cliente) { window.location.href = '/login?retorno=checkout'; return; }
+      if (!modalidadSel) { toast('Elige cómo quieres recibir tu pedido', false); return; }
+      const direccion = document.getElementById('input-direccion').value.trim();
+      if (modalidadSel === 'domicilio' && !direccion) {
+        toast('Escribe la dirección de entrega', false);
+        document.getElementById('input-direccion').focus();
+        return;
+      }
+      if (enviando) return;
+      enviando = true;
+      const btn = document.getElementById('btn-confirmar');
+      btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
+      try {
+        const r = await Api.pedir('/api/pedidos', { metodo: 'POST',
+          datos: { lineas: Carrito.lineasPedido(), modalidad: modalidadSel, direccion: modalidadSel === 'domicilio' ? direccion : '',
+                   latitud: modalidadSel === 'domicilio' && ubicacion ? ubicacion.latitud : null,
+                   longitud: modalidadSel === 'domicilio' && ubicacion ? ubicacion.longitud : null } });
+        Carrito.vaciar();
+        window.location.href = '/recibo?pedido=' + encodeURIComponent(r.pedido.numero);
+      } catch (err) {
+        enviando = false;
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        toast(err.message, false);
+        if (err.estado === 401) setTimeout(() => { window.location.href = '/login?retorno=checkout'; }, 1500);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderResumen();
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+    });
+  </script>
+</body>
+</html>

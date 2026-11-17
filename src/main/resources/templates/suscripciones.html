@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/tienda :: cabeza('Suscripciones', 'Planes de suscripción con descuento en medicamentos y variedades.')}"></head>
+<body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido">
+    <section class="sus-hero">
+      <div class="contenedor sus-hero-interior">
+        <div id="badge-hero-activo"></div>
+        <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Suscripciones</span></nav>
+        <h1>Compra lo de siempre y paga menos</h1>
+        <p class="hero-desc">Suscríbete y obtén descuentos automáticos en todos tus medicamentos y variedades.</p>
+      </div>
+    </section>
+
+    <section class="contenedor planes-seccion" aria-label="Planes">
+      <div class="plan-activo-banner" id="banner-plan-activo">
+        <span class="banner-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
+        <div class="banner-texto">
+          <strong id="banner-plan-nombre">Plan activo</strong>
+          <span id="banner-plan-desc">Tu descuento está activo en toda la tienda</span>
+        </div>
+        <div class="banner-acciones">
+          <button class="btn btn--secundario btn--sm" type="button" onclick="renovarPlan()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#refrescar"/></svg> Renovar</button>
+          <button class="btn btn--peligro btn--sm" type="button" onclick="cancelarSuscripcion()">Cancelar</button>
+        </div>
+      </div>
+
+      <div id="alerta-vencimiento" class="alerta alerta--aviso">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg>
+        <span class="alerta-venc-txt"></span>
+        <button class="btn btn--secundario btn--sm" type="button" onclick="renovarPlan()">Renovar ahora</button>
+      </div>
+
+      <div class="planes-grid" data-escalonar>
+        <article class="plan-card" data-plan="basico" data-descuento="3" data-precio="9900">
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#brote"/></svg></span>
+          <h2 class="plan-nombre">Básico</h2>
+          <p class="plan-desc">Empieza a ahorrar en tus compras de la droguería.</p>
+          <div class="plan-precio"><sup>$</sup>9.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>3%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+          </ul>
+          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick=\"seleccionarPlan('basico')\">Suscribirme</button>
+        </article>
+        <article class="plan-card" data-plan="estandar" data-descuento="5" data-precio="19900">
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#capsula"/></svg></span>
+          <h2 class="plan-nombre">Estándar</h2>
+          <p class="plan-desc">Ahorra más en tus medicamentos y variedades del mes.</p>
+          <div class="plan-precio"><sup>$</sup>19.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>5%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+          </ul>
+          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick=\"seleccionarPlan('estandar')\">Suscribirme</button>
+        </article>
+        <article class="plan-card popular" data-plan="regular" data-descuento="10" data-precio="29900">
+          <span class="badge-popular">Recomendado</span>
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#hospital"/></svg></span>
+          <h2 class="plan-nombre">Regular</h2>
+          <p class="plan-desc">Domicilio prioritario y descuento ampliado para clientes frecuentes.</p>
+          <div class="plan-precio"><sup>$</sup>29.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>10%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+            <li class="plan-beneficio">Domicilio prioritario</li>
+          </ul>
+          <button class="btn btn--primario btn--bloque btn-plan" type="button" onclick=\"seleccionarPlan('regular')\">Suscribirme</button>
+        </article>
+        <article class="plan-card" data-plan="premium" data-descuento="15" data-precio="39900">
+          <span class="plan-icono plan-icono--vino"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#corona"/></svg></span>
+          <h2 class="plan-nombre">Premium</h2>
+          <p class="plan-desc">Máximo ahorro, domicilio gratis y acceso exclusivo a ofertas.</p>
+          <div class="plan-precio"><sup>$</sup>39.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>15%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+            <li class="plan-beneficio">Domicilio gratis y prioritario</li>
+            <li class="plan-beneficio">Acceso anticipado a ofertas</li>
+            <li class="plan-beneficio">Acceso exclusivo a lanzamientos</li>
+          </ul>
+          <button class="btn btn--oscuro btn--bloque btn-plan" type="button" onclick=\"seleccionarPlan('premium')\">Suscribirme</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="contenedor bloque" aria-labelledby="titulo-comparativa">
+      <header class="encabezado revelar">
+        <h2 id="titulo-comparativa" class="titulo-seccion">Todos los planes, lado a lado</h2>
+      </header>
+      <div class="tarjeta tabla-marco revelar">
+        <table class="tabla tabla-comparativa">
+          <thead><tr><th scope="col">Beneficio</th><th scope="col">Básico</th><th scope="col">Estándar</th><th scope="col">Regular</th><th scope="col">Premium</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Acceso al catálogo</th><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Pedidos por WhatsApp</th><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Descuento en productos</th><td class="valor">3%</td><td class="valor">5%</td><td class="valor">10%</td><td class="valor">15%</td></tr>
+            <tr><th scope="row">Domicilio prioritario</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Domicilio gratis</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Ofertas anticipadas</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Acceso exclusivo</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Precio mensual</th><td class="valor">$9.900</td><td class="valor">$19.900</td><td class="valor">$29.900</td><td class="valor">$39.900</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="bloque bloque--tono" aria-labelledby="titulo-faq">
+      <div class="contenedor faq-rejilla">
+        <header class="revelar">
+          <h2 id="titulo-faq" class="titulo-seccion">Lo que suelen preguntarnos</h2>
+        </header>
+        <div class="faq-lista revelar">
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo se aplica el descuento?<svg class="ic chevron" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Cuando el equipo aprueba tu pago, el descuento se activa en tu cuenta. En los catálogos verás el precio original tachado junto al precio con descuento, y el carrito calcula el total con ese precio.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Puedo cancelar mi suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Sí, desde esta página o desde tu perfil. Tu descuento sigue vigente hasta que termine el período que ya pagaste.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿El descuento aplica a todos los productos?<svg class="ic chevron" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Sí, aplica a todos los medicamentos y variedades de la tienda. Se calcula sobre el precio de cada presentación o producto, y el valor final lo confirma la tienda al recibir tu pedido.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo pago la suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Puedes pagar en efectivo en la droguería, o por los medios de pago en línea que aparezcan en la página de pago y enviar tu comprobante. Cuando el pago se verifica, el equipo activa tu plan por 30 días.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-velo" id="alerta-sesion" role="dialog" aria-modal="true" aria-labelledby="alerta-sesion-titulo">
+    <div class="modal modal--centrado">
+      <div class="modal-cuerpo">
+        <span class="modal-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg></span>
+        <h2 id="alerta-sesion-titulo">Inicia sesión primero</h2>
+        <p id="alerta-sesion-msg">Para suscribirte necesitas iniciar sesión o registrarte.</p>
+      </div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" type="button" onclick="cerrarAlertaSesion()">Cancelar</button>
+        <button class="btn btn--secundario" type="button" onclick="irAlLogin()">Iniciar sesión</button>
+        <button class="btn btn--primario" type="button" onclick="irAlRegistro()">Crear cuenta gratis</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-velo" id="modal-sus" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="modal modal--centrado">
+      <div class="modal-cuerpo">
+        <span class="modal-icono" id="modal-icono"></span>
+        <h2 id="modal-titulo">Plan Regular</h2>
+        <p id="modal-texto">¿Quieres activar este plan?</p>
+        <div class="insignia insignia--exito descuento-badge" id="modal-descuento-badge">5% de descuento</div>
+      </div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" type="button" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn btn--primario" id="btn-confirmar-sus" type="button" onclick="confirmarPlan()">Continuar al pago <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    const WHATSAPP = 'https://wa.me/573225065554';
+    let planPendiente = null;
+    let pagoEnRevision = null;
+
+    const PLANES_INFO = {
+      basico:   { icono: 'brote' },
+      estandar: { icono: 'capsula' },
+      regular:  { icono: 'hospital' },
+      premium:  { icono: 'corona' }
+    };
+
+    function seleccionarPlan(clave) {
+      const plan = Seguridad.planCanonico(clave);
+      if (!plan) return;
+
+      if (!Cuenta.disponible()) {
+        const mensaje = `Hola, quiero suscribirme al plan ${plan.nombre} (${plan.descuento}% de descuento, ${formatPrecio(plan.precio)} al mes). ¿Cómo puedo pagarlo?`;
+        window.open(`${WHATSAPP}?text=${encodeURIComponent(mensaje)}`, '_blank', 'noopener');
+        return;
+      }
+      if (!Cuenta.cliente()) {
+        planPendiente = plan;
+        mostrarAlertaSesion('Plan ' + plan.nombre);
+        return;
+      }
+      if (pagoEnRevision) {
+        Toast.mostrar(`Ya enviaste un pago del plan ${pagoEnRevision.plan}. Espera a que la droguería lo revise.`);
+        return;
+      }
+
+      planPendiente = plan;
+      const sus = Suscripcion.obtener();
+      document.getElementById('modal-icono').innerHTML = Experiencia.icono(PLANES_INFO[plan.clave].icono);
+      document.getElementById('modal-titulo').textContent          = 'Plan ' + plan.nombre;
+      document.getElementById('modal-descuento-badge').textContent = plan.descuento + '% de descuento';
+      document.getElementById('modal-texto').textContent = sus && sus.estado === 'activa'
+        ? `Paga ${formatPrecio(plan.precio)} y envía el comprobante. Cuando la droguería lo apruebe, tu plan se renueva por 30 días más.`
+        : `Paga ${formatPrecio(plan.precio)} y envía el comprobante. Cuando la droguería lo apruebe, tu descuento del ${plan.descuento}% se aplica en toda la tienda.`;
+      document.getElementById('modal-sus').classList.add('visible');
+    }
+
+    function mostrarAlertaSesion(nombrePlan) {
+      const msg = document.getElementById('alerta-sesion-msg');
+      if (msg) msg.textContent = `Para suscribirte al ${nombrePlan} necesitas iniciar sesión o crear tu cuenta.`;
+      document.getElementById('alerta-sesion').classList.add('visible');
+    }
+
+    function cerrarAlertaSesion() {
+      document.getElementById('alerta-sesion').classList.remove('visible');
+      planPendiente = null;
+    }
+
+    function retorno() {
+      return 'suscripciones' + (planPendiente ? '?plan=' + planPendiente.clave : '');
+    }
+    function irAlLogin()    { window.location.href = '/login?retorno=' + encodeURIComponent(retorno()); }
+    function irAlRegistro() { window.location.href = '/registro?retorno=' + encodeURIComponent(retorno()); }
+
+    function cerrarModal() {
+      document.getElementById('modal-sus').classList.remove('visible');
+      planPendiente = null;
+    }
+
+    function confirmarPlan() {
+      if (!planPendiente) return;
+      const clave = planPendiente.clave;
+      cerrarModal();
+      window.location.href = '/pago-suscripcion?plan=' + clave;
+    }
+
+    function renovarPlan() {
+      const sus = Suscripcion.obtener();
+      if (sus) seleccionarPlan(sus.plan);
+    }
+
+    async function cancelarSuscripcion() {
+      const sus = Suscripcion.obtener();
+      if (!sus) return;
+      const si = await Experiencia.confirmar({
+        titulo: 'Cancelar tu plan',
+        texto: `Conservas el ${sus.descuento}% de descuento hasta el ${formatFecha(sus.vence)}. Después el plan no se renueva.`,
+        accion: 'Cancelar el plan', peligro: true
+      });
+      if (!si) return;
+      try {
+        await Api.pedir('/api/cuenta/suscripcion/cancelar', { metodo: 'POST' });
+        await Cuenta.recargar();
+        Toast.mostrar('Plan cancelado. Tu descuento sigue hasta que venza.');
+        actualizarUI();
+      } catch (err) { Toast.mostrar(err.message); }
+    }
+
+    function actualizarUI() {
+      const sus        = Suscripcion.obtener();
+      const banner     = document.getElementById('banner-plan-activo');
+      const badgeHero  = document.getElementById('badge-hero-activo');
+      const alertaVenc = document.getElementById('alerta-vencimiento');
+      const esc        = Seguridad.esc;
+
+      document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('plan-actual'));
+      alertaVenc.style.display = 'none';
+      if (!sus) {
+        banner.classList.remove('visible');
+        badgeHero.innerHTML = '';
+        return;
+      }
+      const dias = Suscripcion.diasRestantes();
+      const cancelada = sus.estado === 'cancelada';
+      const vence = dias !== null ? ` · Vence en ${dias} día${dias === 1 ? '' : 's'}` : '';
+      banner.classList.add('visible');
+      document.getElementById('banner-plan-nombre').textContent = `Plan ${sus.nombre} ${cancelada ? 'cancelado' : 'activo'}`;
+      document.getElementById('banner-plan-desc').textContent = cancelada
+        ? `Tu ${sus.descuento}% de descuento sigue hasta el ${formatFecha(sus.vence)}`
+        : `${sus.descuento}% de descuento en toda la tienda${vence}`;
+      banner.querySelector('.btn--peligro').hidden = cancelada;
+      badgeHero.innerHTML = `<div class="sus-badge-activo"><span class="dot"></span>Plan ${esc(sus.nombre)} · ${esc(sus.descuento)}% de descuento${esc(vence)}</div>`;
+      if (!cancelada && dias !== null && dias <= 5) {
+        alertaVenc.style.display = 'flex';
+        const txt = alertaVenc.querySelector('.alerta-venc-txt');
+        if (txt) txt.textContent = `Tu plan vence en ${dias} día${dias === 1 ? '' : 's'}. Renuévalo para no perder tu descuento.`;
+      }
+      document.querySelector(`.plan-card[data-plan="${CSS.escape(sus.plan)}"]`)?.classList.add('plan-actual');
+    }
+
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const estaAbierto = item.classList.contains('abierto');
+      document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('abierto'); i.querySelector('.faq-pregunta').setAttribute('aria-expanded', 'false'); });
+      if (!estaAbierto) { item.classList.add('abierto'); btn.setAttribute('aria-expanded', 'true'); }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { cerrarModal(); cerrarAlertaSesion(); }
+    });
+    document.getElementById('modal-sus').addEventListener('click', e => {
+      if (e.target === e.currentTarget) cerrarModal();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+      document.querySelectorAll('.faq-pregunta').forEach(b => b.setAttribute('aria-expanded', 'false'));
+      actualizarUI();
+      if (!Cuenta.disponible()) {
+        document.querySelectorAll('.btn-plan').forEach(b => { b.textContent = 'Pedir por WhatsApp'; });
+        return;
+      }
+      const elegido = new URLSearchParams(location.search).get('plan');
+      const listo = Cuenta.cliente()
+        ? Api.pedir('/api/cuenta/solicitudes').then(s => { pagoEnRevision = s.find(x => x.estado === 'pendiente') || null; }).catch(() => {})
+        : Promise.resolve();
+      listo.then(() => { if (elegido && Cuenta.cliente()) seleccionarPlan(elegido); });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Iniciar sesión', 'Inicia sesión en tu cuenta de Los Tres Hermanos.')}"></head>
+<body class="pagina-auth">
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+  <main class="auth" id="contenido">
+    <aside class="auth-marca" aria-hidden="true">
+      <a th:href="@{/}" class="auth-logo" tabindex="-1"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44"></a>
+      <div class="auth-marca-texto">
+        <h2>Tus pedidos y beneficios, en un solo lugar.</h2>
+        <ul class="auth-puntos">
+          <li><svg class="ic"><use href="/img/iconos.svg#check"/></svg>Consulta tus pedidos anteriores</li>
+          <li><svg class="ic"><use href="/img/iconos.svg#check"/></svg>Gestiona tu suscripción</li>
+          <li><svg class="ic"><use href="/img/iconos.svg#check"/></svg>Compra sin volver a escribir tus datos</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="auth-panel">
+      <a th:href="@{/}" class="auth-logo-movil" aria-label="Los Tres Hermanos, ir al inicio"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44"></a>
+      <div class="auth-formulario entra" style="--i:0">
+        <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Iniciar sesión</span></nav>
+        <h1>Bienvenido de nuevo</h1>
+        <p class="auth-sub">Ingresa tus credenciales para continuar.</p>
+
+        <div class="form" id="login-form">
+          <div class="campo">
+            <label for="input-correo">Correo electrónico</label>
+            <div class="campo-icono field" id="f-correo">
+              <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#correo"/></svg>
+              <input type="email" id="input-correo" placeholder="tu@correo.com" autocomplete="email">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="input-pass">Contraseña</label>
+            <div class="campo-icono field" id="f-pass">
+              <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg>
+              <input type="password" id="input-pass" placeholder="Tu contraseña" autocomplete="current-password">
+              <button type="button" class="btn-ojo" id="btn-ojo" aria-label="Mostrar u ocultar contraseña">
+                <svg id="ojo-c" class="ic" aria-hidden="true"><use href="/img/iconos.svg#ojo-no"/></svg>
+                <svg id="ojo-a" class="ic" style="display:none" aria-hidden="true"><use href="/img/iconos.svg#ojo"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="alerta alerta--peligro error-msg" id="error-login" role="alert">
+            <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#alerta"/></svg>
+            <span id="error-texto">Correo o contraseña incorrectos</span>
+          </div>
+
+          <button class="btn btn--primario btn--lg btn--bloque btn-entrar" id="btn-entrar" type="button" onclick="iniciarSesion()">
+            <span class="btn-texto">Iniciar sesión</span>
+            <span class="btn-spinner" id="spin"></span>
+          </button>
+        </div>
+
+        <div class="divisor"><span>o</span></div>
+        <button class="btn btn--secundario btn--bloque btn-invitado" type="button" onclick="entrarComoInvitado()">Seguir sin iniciar sesión</button>
+        <p class="auth-pie">¿No tienes cuenta? <a th:href="@{/registro}">Regístrate gratis</a></p>
+      </div>
+    </section>
+  </main>
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    document.getElementById('btn-ojo').addEventListener('click', () => {
+      const inp = document.getElementById('input-pass');
+      const vis = inp.type === 'text';
+      inp.type = vis ? 'password' : 'text';
+      document.getElementById('ojo-c').style.display = vis ? 'block' : 'none';
+      document.getElementById('ojo-a').style.display = vis ? 'none' : 'block';
+    });
+
+    function toast(msg, ok=true) {
+      const wrap = document.getElementById('toast-wrap');
+      const el = document.createElement('div');
+      el.className = 'toast' + (ok ? '' : ' err');
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3500);
+    }
+
+    const params  = new URLSearchParams(window.location.search);
+    const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/');
+
+    function mostrarError(texto, campos) {
+      document.getElementById('error-texto').textContent = texto;
+      document.getElementById('error-login').classList.add('visible');
+      (campos || []).forEach(id => document.getElementById(id).classList.add('error'));
+    }
+
+    async function iniciarSesion() {
+      const correo = document.getElementById('input-correo').value.trim();
+      const pass   = document.getElementById('input-pass').value;
+      document.getElementById('error-login').classList.remove('visible');
+      ['f-correo','f-pass'].forEach(id => document.getElementById(id).classList.remove('error'));
+
+      if (!correo || !pass) {
+        mostrarError('Completa todos los campos.', [!correo && 'f-correo', !pass && 'f-pass'].filter(Boolean));
+        return;
+      }
+
+      const btn   = document.getElementById('btn-entrar');
+      const spin  = document.getElementById('spin');
+      const texto = btn.querySelector('.btn-texto');
+      btn.disabled = true; texto.style.display = 'none'; spin.classList.add('visible');
+      try {
+        const r = await Api.pedir('/api/cuenta/ingreso', { metodo: 'POST', datos: { correo, clave: pass } });
+        if (r.equipo) {
+          toast('Bienvenido al panel');
+          setTimeout(() => { window.location.href = '/admin'; }, 500);
+          return;
+        }
+        toast(`¡Bienvenido, ${r.cliente.nombre.split(' ')[0]}!`);
+        setTimeout(() => { window.location.href = destino; }, 700);
+      } catch (err) {
+        btn.disabled = false; texto.style.display = ''; spin.classList.remove('visible');
+        const form = document.getElementById('login-form');
+        form.classList.add('shake');
+        form.addEventListener('animationend', () => form.classList.remove('shake'), { once: true });
+        const sinServidor = !Cuenta.disponible() && err.estado !== 400 && err.estado !== 503;
+        mostrarError(sinServidor ? 'Las cuentas en línea no están disponibles en esta versión de la página. Puedes ver el catálogo y pedir por WhatsApp.' : err.message,
+          err.estado === 400 ? ['f-correo', 'f-pass'] : []);
+      }
+    }
+
+    document.getElementById('login-form').addEventListener('keydown', e => { if (e.key === 'Enter') iniciarSesion(); });
+
+    function entrarComoInvitado() {
+      window.location.href = destino;
+    }
+
+    if (Cuenta.cliente()) window.location.replace(destino);
+    if (params.has('salir')) toast('Cerraste sesión.');
+    if (params.has('bloqueado')) mostrarError('Demasiados intentos. Espera unos minutos y vuelve a intentarlo.');
+    if (params.has('error')) mostrarError('El correo o la contraseña no son correctos.', ['f-correo', 'f-pass']);
+    if (params.has('inactiva')) mostrarError('Tu cuenta del equipo fue desactivada. Habla con el propietario de la droguería.');
+    if (params.get('retorno') === 'admin') {
+      document.querySelector('.auth-sub').textContent = 'Inicia sesión para entrar al panel de la droguería.';
+    }
+    if (params.get('retorno')) {
+      document.querySelector('.auth-pie a').href = '/registro?retorno=' + encodeURIComponent(params.get('retorno'));
+    }
+  </script>
+</body>
+</html>

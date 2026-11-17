@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Medicamentos', 'Catálogo de medicamentos: busca por nombre, marca o categoría y elige presentación, concentración y marca.')}"></head>
+<body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido">
+    <section class="catalogo-cabecera">
+      <div class="contenedor">
+        <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Medicamentos</span></nav>
+        <h1 class="titulo-pagina">Medicamentos</h1>
+        <p class="cabecera-texto">Abre un producto para ver sus presentaciones, marcas y precios.</p>
+        <div class="chips-wrap" id="chips-categoria" role="group" aria-label="Filtrar por categoría"></div>
+      </div>
+    </section>
+
+    <section class="contenedor catalogo">
+      <div id="editor-imagenes" hidden th:if="${editarImagenes}" th:attr="data-csrf=${_csrf.token}"></div>
+      <p class="alerta alerta--info aviso-imagenes" th:if="${editarImagenes}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg><span>Tienes permiso para gestionar productos: usa el botón de cada tarjeta para agregar o cambiar su imagen. JPG, PNG o WEBP de hasta 3 MB.</span></p>
+      <div class="resultados-info">
+        <span id="contador-resultados" role="status">Cargando...</span>
+        <div class="resultados-controles">
+          <div class="filtro-lista">
+            <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg>
+            <label class="solo-lector" for="search-input">Filtrar esta lista</label>
+            <input type="search" id="search-input" placeholder="Filtrar esta lista" autocomplete="off">
+          </div>
+          <label class="solo-lector" for="select-orden">Ordenar</label>
+          <select class="select-orden" id="select-orden">
+            <option value="default">Orden del catálogo</option>
+            <option value="precio-asc">Precio: menor a mayor</option>
+            <option value="precio-desc">Precio: mayor a menor</option>
+            <option value="nombre">A - Z</option>
+          </select>
+        </div>
+      </div>
+      <div class="medicamentos-grid" id="medications-list">
+        <div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div>
+      </div>
+      <p class="nota-catalogo"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg> Productos sujetos a disponibilidad. Consulta a un profesional de la salud antes de usar cualquier medicamento.</p>
+    </section>
+  </main>
+
+  <button class="fab-carrito no-imprimir" id="fab-carrito" type="button" onclick="abrirDrawer()" aria-label="Abrir carrito">
+    <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#carrito"/></svg>
+    <span class="fab-badge">0</span>
+  </button>
+
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const esc = Seguridad.esc;
+      const parametros = new URLSearchParams(location.search);
+      const filtro = { cat: 'all', busqueda: parametros.get('q') || '', orden: 'default' };
+      const cats = CATEGORIAS.filter(c => c.tipo === 'medicamento');
+      if (cats.some(c => c.id === parametros.get('cat'))) filtro.cat = parametros.get('cat');
+
+      const chips = document.getElementById('chips-categoria');
+      chips.innerHTML = [{ id: 'all', nombre: 'Todos' }, ...cats].map(c =>
+        `<button class="chip-filtro ${c.id === filtro.cat ? 'activo' : ''}" data-cat="${esc(c.id)}" type="button" aria-pressed="${c.id === filtro.cat}">${esc(c.nombre)}</button>`).join('');
+
+      const indice = Buscador.indice().filter(e => e.tipo === 'medicamento');
+
+      function render() {
+        let lista = filtro.busqueda ? Buscador.buscar(filtro.busqueda, indice).map(e => e.p) : [...MEDICAMENTOS];
+        if (filtro.cat !== 'all') lista = lista.filter(m => m.cat === filtro.cat);
+        if (filtro.orden === 'nombre') lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        if (filtro.orden === 'precio-asc') lista.sort((a, b) => Ficha.desde(a) - Ficha.desde(b));
+        if (filtro.orden === 'precio-desc') lista.sort((a, b) => Ficha.desde(b) - Ficha.desde(a));
+
+        const contador = document.getElementById('contador-resultados');
+        const enVariedades = filtro.busqueda ? Buscador.buscar(filtro.busqueda).filter(e => e.tipo === 'variedad').length : 0;
+        contador.innerHTML = `<strong>${lista.length}</strong> medicamento${lista.length !== 1 ? 's' : ''}${filtro.busqueda ? ` para "${esc(filtro.busqueda)}"` : ''}` +
+          (enVariedades ? ` · <a class="enlace" href="/variedades?q=${encodeURIComponent(filtro.busqueda)}">${enVariedades} en variedades</a>` : '');
+
+        const grid = document.getElementById('medications-list');
+        if (!lista.length) {
+          const consulta = encodeURIComponent(`Hola, estoy buscando ${filtro.busqueda || 'un medicamento'}. ¿Lo tienen disponible?`);
+          grid.innerHTML = `<div class="vacio vacio-busqueda"><div class="vacio-icono">${Experiencia.icono('buscar')}</div>
+            <h3>No encontramos ese medicamento</h3>
+            <p>Revisa cómo está escrito, prueba otra categoría o pregúntanos directamente.</p>
+            <a class="btn btn--secundario btn--sm" href="https://wa.me/573225065554?text=${consulta}" target="_blank" rel="noopener">${Experiencia.icono('whatsapp')} Preguntar por WhatsApp</a></div>`;
+          return;
+        }
+        grid.innerHTML = lista.map(Ficha.tarjetaMedicamento).join('');
+      }
+
+      const entrada = document.getElementById('search-input');
+      entrada.value = filtro.busqueda;
+      render();
+
+      entrada.addEventListener('input', (e) => { filtro.busqueda = e.target.value.trim(); render(); });
+      chips.addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip-filtro');
+        if (!chip) return;
+        chips.querySelectorAll('.chip-filtro').forEach(c => { c.classList.toggle('activo', c === chip); c.setAttribute('aria-pressed', c === chip); });
+        filtro.cat = chip.dataset.cat;
+        render();
+      });
+      document.getElementById('select-orden').addEventListener('change', (e) => { filtro.orden = e.target.value; render(); });
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+    });
+  </script>
+</body>
+</html>

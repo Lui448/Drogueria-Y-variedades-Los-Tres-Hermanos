@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Servicios', 'Medicamentos, recargas, fotocopiado y variedades en Arjona, Bolívar.')}"></head>
+<body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido">
+    <section class="cabecera contenedor">
+      <nav class="migas revelar" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Servicios</span></nav>
+      <h1 class="titulo-pagina revelar">Una droguería que también resuelve lo demás</h1>
+      <p class="cabecera-texto revelar">Todo lo que necesitas en un solo lugar, con atención de calidad.</p>
+    </section>
+
+    <section class="contenedor servicios-lista">
+      <article class="servicio-fila revelar">
+        <span class="servicio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#capsula"/></svg></span>
+        <div><h2>Medicamentos</h2><p>Catálogo de medicamentos con calidad y precios accesibles para toda tu familia: analgésicos, antibióticos, antiinflamatorios y más.</p></div>
+        <a th:href="@{/medicamentos}" class="btn btn--secundario">Ver catálogo <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+      </article>
+      <article class="servicio-fila revelar">
+        <span class="servicio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#celular"/></svg></span>
+        <div><h2>Recargas y minutos</h2><p>Recarga tu celular de cualquier operador de forma rápida y segura. También ofrecemos venta de minutos para que siempre estés comunicado.</p></div>
+        <span class="insignia insignia--exito"><span class="punto"></span>Disponible en tienda</span>
+      </article>
+      <article class="servicio-fila revelar">
+        <span class="servicio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#copia"/></svg></span>
+        <div><h2>Fotocopiado</h2><p>Servicio rápido y económico. Trae tus documentos y los reproducimos en el momento. Ideal para estudiantes y profesionales.</p></div>
+        <span class="insignia insignia--azul">Servicio express</span>
+      </article>
+      <article class="servicio-fila revelar">
+        <span class="servicio-icono servicio-icono--vino"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#bolsa"/></svg></span>
+        <div><h2>Variedades</h2><p>Artículos de primera necesidad: útiles escolares, aseo personal, perfumes, desodorantes y más.</p></div>
+        <a th:href="@{/variedades}" class="btn btn--secundario">Ver productos <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+      </article>
+    </section>
+
+    <section class="contenedor bloque-horario">
+      <div class="horario revelar">
+        <div>
+          <h2 class="titulo-seccion titulo-seccion--claro">Horario de atención</h2>
+          <a th:href="@{/contacto}" class="btn btn--secundario">Cómo llegar <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+        </div>
+        <dl class="horario-lista">
+          <div><dt>Lunes a viernes</dt><dd>7:00 AM – 9:00 PM</dd></div>
+          <div><dt>Sábados</dt><dd>7:00 AM – 8:00 PM</dd></div>
+          <div><dt>Domingos</dt><dd>8:00 AM – 6:00 PM</dd></div>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' }));
+  </script>
+</body>
+</html>

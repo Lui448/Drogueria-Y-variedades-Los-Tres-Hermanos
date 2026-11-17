@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Nosotros', 'La historia, misión y valores de Droguería y Variedades Los Tres Hermanos.')}"></head>
+<body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido">
+    <section class="cabecera contenedor cabecera--amplia">
+      <nav class="migas revelar" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Nosotros</span></nav>
+      <h1 class="titulo-pagina revelar">Tres hermanos, un compromiso con Arjona</h1>
+    </section>
+
+    <section class="contenedor historia">
+      <img class="pieza-marca revelar" th:src="@{/img/marca/pieza-marca-3h.jpeg}" alt="Pieza de marca de Droguería Los Tres Hermanos: el símbolo 3H con una cápsula, el lema Calidad y servicio y la frase Tu salud, nuestra prioridad." width="1214" height="1296" loading="lazy">
+      <div class="historia-texto revelar">
+        <p class="historia-entrada">Droguería y Variedades Los Tres Hermanos nació del sueño de tres hermanos que querían brindar un servicio de salud accesible y de calidad a la comunidad de Arjona, Bolívar.</p>
+        <p>Con esfuerzo, dedicación y mucho amor por su tierra, pusieron en marcha un negocio que hoy es parte fundamental del tejido social del municipio.</p>
+        <p>A lo largo de los años, hemos crecido no solo en productos y servicios, sino en la confianza que nuestra comunidad ha depositado en nosotros. Cada cliente que nos visita se convierte en parte de nuestra familia, y eso es lo que nos impulsa a seguir mejorando cada día para ofrecerles lo mejor.</p>
+      </div>
+    </section>
+
+    <section class="mision-vision">
+      <div class="contenedor mv-rejilla">
+        <article class="revelar">
+          <h2>Nuestra misión</h2>
+          <p>Somos una droguería comprometida con el bienestar de la comunidad de Arjona, Bolívar. Nuestra misión es brindar productos farmacéuticos y de primera necesidad de alta calidad, con atención cálida, precios justos y servicio oportuno que mejore la calidad de vida de cada persona que nos visita.</p>
+        </article>
+        <article class="revelar">
+          <h2>Nuestra visión</h2>
+          <p>Ser la droguería y tienda de variedades de referencia en Arjona y municipios vecinos, reconocida por su compromiso con la salud, la confianza de sus clientes y la innovación en el servicio. Queremos crecer junto a nuestra comunidad, ampliando nuestros productos y mejorando cada día la experiencia de compra.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="contenedor bloque" aria-labelledby="titulo-valores">
+      <header class="encabezado revelar">
+        <h2 id="titulo-valores" class="titulo-seccion">Nuestros valores</h2>
+      </header>
+      <ol class="valores-detalle" data-escalonar>
+        <li><h3>Responsabilidad</h3><p>Cumplimos con nuestros compromisos y actuamos con seriedad en cada decisión.</p></li>
+        <li><h3>Respeto</h3><p>Tratamos a cada cliente y colaborador con dignidad y consideración.</p></li>
+        <li><h3>Honestidad</h3><p>Actuamos con transparencia y ética en todos nuestros procesos y transacciones.</p></li>
+        <li><h3>Solidaridad</h3><p>Apoyamos a nuestra comunidad y trabajamos juntos por el bienestar común.</p></li>
+        <li><h3>Lealtad</h3><p>Construimos relaciones duraderas con nuestros clientes basadas en la confianza.</p></li>
+      </ol>
+    </section>
+  </main>
+
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' }));
+  </script>
+</body>
+</html>

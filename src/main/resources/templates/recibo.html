@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Confirmación de pedido', 'Recibo de tu pedido en Los Tres Hermanos.')}"></head>
+<body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido" class="contenedor recibo-wrap">
+    <div class="acciones-imprimir no-imprimir entra" style="--i:0">
+      <button class="btn btn--primario" type="button" onclick="window.print()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#imprimir"/></svg> Imprimir recibo</button>
+      <button class="btn btn--secundario" type="button" id="btn-whatsapp"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg> Enviar por WhatsApp</button>
+      <a th:href="@{/}" class="btn btn--fantasma"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha-izq"/></svg> Volver al inicio</a>
+    </div>
+
+    <article class="recibo entra" id="recibo-content" style="--i:1">
+      <header class="recibo-header">
+        <img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="290" height="44">
+        <img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="290" height="44">
+        <p>Diagonal 52 50A-755, Arjona, Bolívar · +57 322 506 5554</p>
+        <span class="recibo-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
+        <h1 id="recibo-titulo">Cargando tu pedido…</h1>
+        <div class="recibo-num" id="recibo-numero"></div>
+      </header>
+
+      <div class="recibo-body">
+        <dl class="recibo-info-grid">
+          <div><dt>Fecha y hora</dt><dd id="recibo-fecha">—</dd></div>
+          <div><dt>N.° de pedido</dt><dd id="recibo-id">—</dd></div>
+          <div><dt>Total de productos</dt><dd id="recibo-items">—</dd></div>
+          <div><dt>Entrega</dt><dd id="recibo-entrega">—</dd></div>
+          <div><dt>Estado</dt><dd id="recibo-estado">—</dd></div>
+          <div><dt>Pago</dt><dd>Efectivo al recibir el pedido</dd></div>
+        </dl>
+
+        <h2>Detalle del pedido</h2>
+        <div class="tabla-marco">
+          <table class="tabla tabla-productos">
+            <thead><tr><th scope="col">Producto</th><th scope="col">Cant.</th><th scope="col">Precio unit.</th><th scope="col">Subtotal</th></tr></thead>
+            <tbody id="tabla-body"></tbody>
+          </table>
+        </div>
+
+        <div class="totales-wrap">
+          <div class="total-linea"><span>Subtotal</span><span id="total-subtotal">$0</span></div>
+          <div class="total-linea" id="linea-descuento" hidden><span id="etiqueta-descuento">Descuento del plan</span><span id="total-descuento">$0</span></div>
+          <div class="total-linea" id="linea-domicilio" hidden><span>Domicilio</span><span id="total-domicilio">$0</span></div>
+          <div class="total-linea grande"><span>Total a pagar</span><strong id="total-final">$0</strong></div>
+        </div>
+      </div>
+
+      <footer class="recibo-footer">
+        <p>Gracias por comprar en <strong>Droguería y Variedades Los Tres Hermanos</strong>. La droguería revisa tu pedido y te contacta para confirmarlo. Conserva el número de pedido.</p>
+        <p>Preguntas: <a href="https://wa.me/573225065554" target="_blank" rel="noopener">+57 322 506 5554</a> · <a href="mailto:diazpajaro1208@gmail.com">diazpajaro1208@gmail.com</a></p>
+      </footer>
+    </article>
+  </main>
+
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    const ESTADOS = {
+      pendiente:  { texto: 'Recibido, pendiente de confirmar', clase: 'insignia--aviso' },
+      en_proceso: { texto: 'En preparación', clase: 'insignia--azul' },
+      entregado:  { texto: 'Entregado', clase: 'insignia--exito' },
+      cancelado:  { texto: 'Anulado', clase: 'insignia--peligro' }
+    };
+    const esc = Seguridad.esc;
+    const $ = (id) => document.getElementById(id);
+
+    function sinPedido(titulo, texto) {
+      $('recibo-titulo').textContent = titulo;
+      document.querySelector('.recibo-check').hidden = true;
+      $('tabla-body').innerHTML = `<tr><td colspan="4" class="tabla-vacia">${esc(texto)} <a href="/perfil#pedidos">Ver mis pedidos</a></td></tr>`;
+      document.querySelectorAll('#btn-whatsapp, .acciones-imprimir .btn--primario').forEach(b => { b.disabled = true; });
+    }
+
+    function pintar(p) {
+      const estado = ESTADOS[p.estado] || { texto: p.estado, clase: '' };
+      $('recibo-titulo').textContent = p.estado === 'cancelado' ? 'Este pedido fue anulado' : p.estado === 'entregado' ? '¡Pedido entregado!' : '¡Recibimos tu pedido!';
+      document.querySelector('.recibo-check').hidden = p.estado === 'cancelado';
+      $('recibo-numero').textContent = p.numero;
+      $('recibo-id').textContent = p.numero + (p.comprobante ? ' · ' + p.comprobante : '');
+      $('recibo-fecha').textContent = formatFecha(p.fecha, true);
+      const unidades = p.productos.reduce((s, i) => s + Number(i.cantidad), 0);
+      $('recibo-items').textContent = unidades + (unidades === 1 ? ' unidad' : ' unidades');
+      $('recibo-entrega').textContent = p.modalidad === 'domicilio' ? 'Domicilio: ' + (p.direccion || '') : 'Recoger en la droguería';
+      $('recibo-estado').innerHTML = `<span class="insignia ${estado.clase}">${esc(estado.texto)}</span>`;
+      $('tabla-body').innerHTML = p.productos.map(item => `<tr>
+          <td><span class="prod-nombre">${esc(item.nombre)}</span>
+            ${Number(item.precioOriginal) > Number(item.precio) ? `<span class="prod-unit">Antes ${formatPrecio(item.precioOriginal)} c/u</span>` : ''}</td>
+          <td style="text-align:center">${esc(item.cantidad)}</td>
+          <td style="text-align:right">${formatPrecio(item.precio)}</td>
+          <td>${formatPrecio(item.subtotal)}</td>
+        </tr>`).join('');
+      $('total-subtotal').textContent = formatPrecio(p.subtotal);
+      $('linea-descuento').hidden = !(Number(p.descuento) > 0);
+      $('etiqueta-descuento').textContent = `Descuento del plan (${Number(p.descuentoPorcentaje)}%)`;
+      $('total-descuento').textContent = '-' + formatPrecio(p.descuento);
+      $('linea-domicilio').hidden = p.modalidad !== 'domicilio';
+      $('total-domicilio').textContent = Number(p.domicilio) > 0 ? formatPrecio(p.domicilio) : p.domicilioGratis ? 'Gratis con tu plan' : 'Por confirmar';
+      if (p.modalidad === 'domicilio' && p.distanciaKm != null) {
+        $('recibo-entrega').textContent += ` (${String(p.distanciaKm).replace('.', ',')} km)`;
+      }
+      $('total-final').textContent = formatPrecio(p.total);
+
+      $('btn-whatsapp').onclick = () => {
+        const msg = `Hola, hice el pedido ${p.numero} desde la página web por ${formatPrecio(p.total)}. ¿Me confirman, por favor?`;
+        window.open(`https:
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+      if (!protegerRuta()) return;
+      const numero = new URLSearchParams(location.search).get('pedido') || '';
+      if (!/^LTH-[A-Z0-9]{6}$/.test(numero)) {
+        sinPedido('No hay un pedido para mostrar', 'Abre el recibo desde tus pedidos.');
+        return;
+      }
+      Api.pedir('/api/cuenta/pedidos/' + encodeURIComponent(numero))
+        .then(pintar)
+        .catch(err => sinPedido('No pudimos cargar el pedido', err.estado === 404 ? 'Este pedido no está en tu cuenta.' : err.message));
+    });
+  </script>
+</body>
+</html>

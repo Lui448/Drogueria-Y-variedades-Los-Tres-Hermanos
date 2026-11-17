@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/tienda :: cabeza('Pagar suscripción', 'Envía el comprobante de pago de tu plan.')}"></head>
+<body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido" class="contenedor pago">
+    <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><a th:href="@{/suscripciones}">Suscripciones</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Pago</span></nav>
+
+    <div class="plan-resumen entra" id="plan-resumen" style="--i:0">
+      <span class="plan-resumen-icono" id="plan-icono"></span>
+      <div class="plan-resumen-info">
+        <h1 id="plan-nombre">Plan seleccionado</h1>
+        <p id="plan-desc">Cargando información del plan…</p>
+      </div>
+      <div class="plan-resumen-precio"><strong id="plan-precio">–</strong><small>/ mes</small></div>
+    </div>
+
+    <div class="tarjeta pago-card entra" id="formulario-pago" style="--i:1">
+      <h2>Método de pago</h2>
+      <div class="metodos-grid" role="group" aria-label="Método de pago">
+        <button class="metodo-btn" data-metodo="nequi" type="button" aria-pressed="false" onclick="seleccionarMetodo('nequi')"><span class="metodo-logo">N</span>Nequi</button>
+        <button class="metodo-btn" data-metodo="daviplata" type="button" aria-pressed="false" onclick="seleccionarMetodo('daviplata')"><span class="metodo-logo">D</span>Daviplata</button>
+        <button class="metodo-btn" data-metodo="pse" type="button" aria-pressed="false" onclick="seleccionarMetodo('pse')"><span class="metodo-logo">PSE</span>PSE</button>
+        <button class="metodo-btn" data-metodo="bancolombia" type="button" aria-pressed="false" onclick="seleccionarMetodo('bancolombia')"><span class="metodo-logo">B</span>Bancolombia</button>
+        <button class="metodo-btn" data-metodo="tienda" type="button" aria-pressed="false" onclick="seleccionarMetodo('tienda')"><span class="metodo-logo"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg></span>En tienda</button>
+      </div>
+
+      <div class="alerta alerta--info" id="aviso-medios" hidden><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg><span>Por ahora los planes se pagan en efectivo en la droguería. Pronto podrás pagar en línea.</span></div>
+      <div class="instrucciones-pago" id="instrucciones-pago"></div>
+
+      <div class="tienda-info" id="tienda-info">
+        <h3>Pago en tienda (efectivo)</h3>
+        <p>Acércate a la droguería y di el correo con el que te registraste.</p>
+        <p>Al recibir el pago, el equipo activa tu plan en el sistema y el descuento queda listo en tu cuenta.</p>
+        <p class="tienda-dato"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg> Diagonal 52 50A-755, Arjona, Bolívar</p>
+        <p class="tienda-dato"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg> Lun–Vie 7:00 am – 9:00 pm · Sáb 7:00 am – 8:00 pm · Dom 8:00 am – 6:00 pm</p>
+      </div>
+
+      <div id="campos-comprobante" style="display:none">
+        <h2 class="pago-subtitulo">Datos del comprobante</h2>
+        <div class="rejilla-form">
+          <div class="campo todo">
+            <label for="campo-referencia">N.º de referencia o transacción <span class="insignia insignia--peligro">Obligatorio</span></label>
+            <input type="text" id="campo-referencia" placeholder="Ej: 20241120123456" maxlength="60">
+            <p class="campo-ayuda">El código que aparece en la notificación de tu pago.</p>
+            <p class="campo-error" id="err-referencia" hidden>Este campo es obligatorio.</p>
+          </div>
+          <div class="campo">
+            <label for="campo-fecha">Fecha del pago <span class="insignia insignia--peligro">Obligatorio</span></label>
+            <input type="date" id="campo-fecha">
+            <p class="campo-error" id="err-fecha" hidden>Selecciona la fecha del pago.</p>
+          </div>
+          <div class="campo">
+            <label for="campo-titular">Titular de la cuenta <span class="insignia insignia--peligro">Obligatorio</span></label>
+            <input type="text" id="campo-titular" placeholder="Nombre como aparece en la app">
+            <p class="campo-error" id="err-titular" hidden>Este campo es obligatorio.</p>
+          </div>
+        </div>
+
+        <h2 class="pago-subtitulo">Verificación adicional <small>(al menos una)</small></h2>
+        <div class="campo" id="grupo-aprobacion" style="display:none;">
+          <label for="campo-aprobacion">Número de aprobación <span class="insignia">Opcional</span></label>
+          <input type="text" id="campo-aprobacion" placeholder="Ej: AP-7834921">
+          <p class="campo-ayuda">Visible en el recibo del banco.</p>
+        </div>
+
+        <div class="campo">
+          <span class="campo-etiqueta">Foto del comprobante <span class="insignia">Opcional</span></span>
+          <div class="upload-zona" id="upload-zona">
+            <input type="file" id="campo-foto" accept="image/png,image/jpeg,image/webp" onchange="cargarFoto(this)" aria-label="Subir foto del comprobante">
+            <div class="upload-zona-texto">
+              <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#subir"/></svg>
+              <span>Toca para subir una captura o foto</span>
+              <small>JPG, PNG o WEBP, máximo 3 MB</small>
+            </div>
+            <img id="foto-preview" class="upload-preview" alt="Vista previa del comprobante">
+          </div>
+        </div>
+
+        <div class="nota-alternativa" id="nota-alternativa">
+          <div class="alerta alerta--aviso"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#alerta"/></svg><span>No adjuntaste foto ni número de aprobación. Escribe una nota que ayude a verificar tu pago: banco, últimos 4 dígitos de la cuenta y monto exacto.</span></div>
+          <div class="campo">
+            <label for="campo-nota">Nota de verificación <span class="insignia insignia--peligro">Requerida</span></label>
+            <textarea id="campo-nota" rows="3" placeholder="Ej: Pagué desde Bancolombia, cuenta terminada en 3821, monto $29.900…"></textarea>
+            <p class="campo-error" id="err-nota" hidden>Escribe una nota o adjunta foto o número de aprobación.</p>
+          </div>
+        </div>
+
+        <div class="completitud-wrap">
+          <h3>Estado de verificación</h3>
+          <div class="completitud-items" id="completitud-items">
+            <div class="completitud-item" id="ci-referencia"><span class="comp-icono"></span> Referencia de transacción</div>
+            <div class="completitud-item" id="ci-fecha"><span class="comp-icono"></span> Fecha del pago</div>
+            <div class="completitud-item" id="ci-titular"><span class="comp-icono"></span> Nombre del titular</div>
+            <div class="completitud-item" id="ci-verificacion"><span class="comp-icono"></span> Verificación adicional</div>
+          </div>
+        </div>
+
+        <button class="btn btn--primario btn--lg btn--bloque" id="btn-enviar" type="button" onclick="enviarSolicitud()" disabled>Enviar solicitud de pago <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></button>
+      </div>
+    </div>
+
+    <div class="tarjeta pago-card pantalla-confirmacion" id="pantalla-confirmacion">
+      <span class="recibo-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
+      <h1>¡Solicitud enviada!</h1>
+      <p>Recibimos los datos de tu pago. La droguería los verifica y, si todo está bien, activa tu plan. Verás el estado en tu perfil.</p>
+      <span class="insignia insignia--aviso"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg> Pendiente de verificación</span>
+      <div class="confirm-detalle" id="confirm-detalle"></div>
+      <div class="confirm-acciones">
+        <a th:href="@{/}" class="btn btn--secundario">Ir al inicio</a>
+        <a href="/perfil#suscripcion" class="btn btn--primario">Ver mi plan</a>
+      </div>
+    </div>
+  </main>
+
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+  const PASOS = {
+    nequi:       ['Abre la app Nequi y elige <strong>Enviar plata</strong>.', 'Envía el valor del plan a {destino}.', 'Copia la referencia que aparece en la notificación.'],
+    daviplata:   ['Abre la app Daviplata y elige <strong>Pasar plata</strong>.', 'Envía el valor del plan a {destino}.', 'Toma una captura del recibo.'],
+    pse:         ['Paga con PSE en: {destino}.', 'Confirma el valor del plan y guarda el número de aprobación.'],
+    bancolombia: ['Desde la app Bancolombia, transfiere el valor del plan a {destino}.', 'Guarda el comprobante con el número de aprobación.']
+  };
+  const ICONOS_PLAN = { basico: 'brote', estandar: 'capsula', regular: 'hospital', premium: 'corona' };
+  const esc = Seguridad.esc;
+  const $ = (id) => document.getElementById(id);
+
+  let metodoActivo = null;
+  let fotoArchivo  = null;
+  let plan         = null;
+  let medios       = [];
+
+  document.addEventListener('DOMContentLoaded', async function() {
+    initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+    if (!protegerRuta()) return;
+
+    const elegido = Seguridad.planCanonico(new URLSearchParams(location.search).get('plan'));
+    if (!elegido) { window.location.replace('/suscripciones'); return; }
+
+    try {
+      const [planes, mediosServidor] = await Promise.all([Api.pedir('/api/planes'), Api.pedir('/api/pagos/medios')]);
+      plan = planes.find(p => Seguridad.planCanonico(p.nombre)?.clave === elegido.clave);
+      medios = mediosServidor;
+    } catch (err) {
+      $('plan-desc').textContent = err.message;
+      $('formulario-pago').hidden = true;
+      return;
+    }
+    if (!plan) { window.location.replace('/suscripciones'); return; }
+
+    $('plan-nombre').textContent = 'Plan ' + plan.nombre;
+    $('plan-desc').textContent   = `${plan.descuento}% de descuento en todos los productos durante ${plan.dias} días`;
+    $('plan-precio').textContent = formatPrecio(plan.precio);
+    $('plan-icono').innerHTML    = Experiencia.icono(ICONOS_PLAN[elegido.clave] || 'estrella');
+
+    document.querySelectorAll('.metodo-btn').forEach(b => {
+      b.hidden = b.dataset.metodo !== 'tienda' && !medios.some(m => m.codigo === b.dataset.metodo);
+    });
+    if (!medios.length) {
+      $('aviso-medios').hidden = false;
+      seleccionarMetodo('tienda');
+    }
+
+    const hoy = new Date();
+    const local = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const hace30 = new Date(hoy); hace30.setDate(hoy.getDate() - 30);
+    $('campo-fecha').value = local(hoy);
+    $('campo-fecha').max   = local(hoy);
+    $('campo-fecha').min   = local(hace30);
+
+    ['campo-referencia', 'campo-fecha', 'campo-titular', 'campo-aprobacion', 'campo-nota']
+      .forEach(id => $(id)?.addEventListener('input', actualizarCompletitud));
+    actualizarCompletitud();
+  });
+
+  function seleccionarMetodo(metodo) {
+    metodoActivo = metodo;
+    document.querySelectorAll('.metodo-btn').forEach(b => {
+      b.classList.toggle('activo', b.dataset.metodo === metodo);
+      b.setAttribute('aria-pressed', String(b.dataset.metodo === metodo));
+    });
+    const instrEl = $('instrucciones-pago');
+    if (metodo === 'tienda') {
+      instrEl.classList.remove('visible');
+      $('tienda-info').classList.add('visible');
+      $('campos-comprobante').style.display = 'none';
+      return;
+    }
+    const medio = medios.find(m => m.codigo === metodo);
+    if (!medio) return;
+    $('tienda-info').classList.remove('visible');
+    $('campos-comprobante').style.display = 'block';
+    const destino = `<span class="num-cuenta">${esc(medio.destino)}</span>${medio.titular ? ` (a nombre de ${esc(medio.titular)})` : ''}`;
+    instrEl.innerHTML = `<strong>Cómo pagar con ${esc(medio.nombre)}</strong>` +
+      PASOS[metodo].map((p, i) => `<p>${i + 1}. ${p.replace('{destino}', destino)}</p>`).join('') +
+      `<p>${PASOS[metodo].length + 1}. Escribe abajo los datos del comprobante.</p>`;
+    instrEl.classList.add('visible');
+    $('grupo-aprobacion').style.display = (metodo === 'pse' || metodo === 'bancolombia') ? 'block' : 'none';
+    actualizarCompletitud();
+  }
+
+  function cargarFoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      Toast.mostrar('Formato no permitido. Usa una imagen JPG, PNG o WEBP.');
+      input.value = '';
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      Toast.mostrar('La imagen es muy grande. Máximo 3 MB.');
+      input.value = '';
+      return;
+    }
+    fotoArchivo = file;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = $('foto-preview');
+      const zona = $('upload-zona');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      zona.classList.add('tiene-foto');
+      const texto = zona.querySelector('.upload-zona-texto');
+      if (texto) texto.style.display = 'none';
+      actualizarCompletitud();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function valores() {
+    return {
+      referencia: $('campo-referencia').value.trim(),
+      fecha:      $('campo-fecha').value,
+      titular:    $('campo-titular').value.trim(),
+      aprobacion: $('campo-aprobacion')?.value.trim() || '',
+      nota:       $('campo-nota')?.value.trim() || ''
+    };
+  }
+
+  function actualizarCompletitud() {
+    const v = valores();
+    const tieneVerif = fotoArchivo || v.aprobacion || v.nota;
+    $('nota-alternativa')?.classList.toggle('visible', !fotoArchivo && !v.aprobacion);
+    setComp('ci-referencia', !!v.referencia);
+    setComp('ci-fecha',      !!v.fecha);
+    setComp('ci-titular',    !!v.titular);
+    setComp('ci-verificacion', !!tieneVerif);
+    $('btn-enviar').disabled = !(metodoActivo && metodoActivo !== 'tienda' && v.referencia && v.fecha && v.titular && tieneVerif);
+  }
+
+  function setComp(id, ok) {
+    const el = $(id);
+    if (!el) return;
+    el.classList.toggle('ok', ok);
+    el.classList.toggle('error', !ok);
+    el.querySelector('.comp-icono').innerHTML = ok ? Experiencia.icono('check') : '';
+  }
+
+  async function enviarSolicitud() {
+    const v = valores();
+    if (!metodoActivo || metodoActivo === 'tienda') { Toast.mostrar('Elige cómo hiciste el pago.'); return; }
+    if (!v.referencia || !v.fecha || !v.titular) { Toast.mostrar('Completa los campos obligatorios.'); return; }
+    if (!fotoArchivo && !v.aprobacion && !v.nota) { Toast.mostrar('Adjunta la foto, el número de aprobación o una nota.'); return; }
+
+    const datos = new FormData();
+    datos.append('plan', plan.nombre);
+    datos.append('metodo', metodoActivo);
+    datos.append('referencia', v.referencia);
+    datos.append('fechaPago', v.fecha);
+    datos.append('titular', v.titular);
+    if (v.aprobacion) datos.append('aprobacion', v.aprobacion);
+    if (v.nota) datos.append('nota', v.nota);
+    if (fotoArchivo) datos.append('comprobante', fotoArchivo);
+
+    const btn = $('btn-enviar');
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    try {
+      const r = await Api.pedir('/api/suscripciones/solicitud', { metodo: 'POST', formulario: datos });
+      mostrarConfirmacion(r.solicitud, v);
+    } catch (err) {
+      btn.disabled = false;
+      btn.removeAttribute('aria-busy');
+      Toast.mostrar(err.message);
+    }
+  }
+
+  function mostrarConfirmacion(numero, v) {
+    $('formulario-pago').style.display = 'none';
+    $('plan-resumen').style.display = 'none';
+    const medio = medios.find(m => m.codigo === metodoActivo);
+    const fila = (k, val) => `<div class="confirm-detalle-fila"><span>${k}</span><strong>${esc(val)}</strong></div>`;
+    $('confirm-detalle').innerHTML =
+      fila('Plan', 'Plan ' + plan.nombre) +
+      fila('Valor', formatPrecio(plan.precio)) +
+      fila('Medio de pago', medio ? medio.nombre : metodoActivo) +
+      fila('Referencia', v.referencia) +
+      fila('Fecha del pago', formatFecha(v.fecha)) +
+      fila('Titular', v.titular) +
+      fila('N.° de solicitud', String(numero));
+    const confEl = $('pantalla-confirmacion');
+    confEl.style.display = 'block';
+    confEl.classList.add('visible');
+    window.scrollTo({ top: 0, behavior: Experiencia.sinMovimiento ? 'auto' : 'smooth' });
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Mi cuenta', 'Gestiona tu cuenta, pedidos y suscripción en Los Tres Hermanos.')}"></head>
+<body class="perfil">
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+
+  <main id="contenido">
+    <section class="perfil-hero">
+      <div class="contenedor perfil-hero-interior">
+        <div class="perfil-foto entra" style="--i:0">
+          <div class="avatar-grande" id="avatar-inicial">?</div>
+          <button type="button" class="btn-icono perfil-foto-btn" id="btn-foto" aria-label="Cambiar tu foto de perfil" onclick="document.getElementById('input-foto').click()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#subir"/></svg></button>
+          <input type="file" id="input-foto" accept="image/jpeg,image/png,image/webp" hidden onchange="cambiarFoto(this)">
+        </div>
+        <div class="perfil-info entra" style="--i:1">
+          <nav class="migas migas--claras" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Mi cuenta</span></nav>
+          <h1 id="perfil-nombre">Cargando...</h1>
+          <p id="perfil-correo">—</p>
+        </div>
+        <button class="btn btn--secundario btn--sm perfil-salir entra" style="--i:2" type="button" onclick="cerrarSesion()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#salir"/></svg> Cerrar sesión</button>
+      </div>
+    </section>
+
+    <div class="tabs-wrap">
+      <div class="contenedor pestanas" role="group" aria-label="Secciones de mi cuenta">
+        <button class="tab activo" data-sec="pedidos" type="button"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#recibo"/></svg>Mis pedidos</button>
+        <button class="tab" data-sec="favoritos" type="button"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#corazon"/></svg>Favoritos</button>
+        <button class="tab" data-sec="suscripcion" type="button"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#estrella"/></svg>Mi suscripción</button>
+        <button class="tab" data-sec="perfil" type="button"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuario"/></svg>Mi perfil</button>
+        <button class="tab" data-sec="seguridad" type="button"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg>Seguridad</button>
+      </div>
+    </div>
+
+    <div class="contenedor perfil-contenido">
+      <div class="seccion activa" id="sec-pedidos">
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Historial de pedidos</h2><span class="insignia" id="pedidos-count">0 pedidos</span></div>
+          <div class="tarjeta-cuerpo" id="pedidos-body"></div>
+        </div>
+      </div>
+
+      <div class="seccion" id="sec-favoritos">
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Productos favoritos</h2></div>
+          <div class="tarjeta-cuerpo"><div class="favoritos-grid" id="favoritos-grid"></div></div>
+        </div>
+      </div>
+
+      <div class="seccion" id="sec-perfil">
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Datos personales</h2></div>
+          <div class="tarjeta-cuerpo rejilla-form">
+            <div class="campo"><label for="edit-nombre">Nombre completo</label><input type="text" id="edit-nombre" placeholder="Tu nombre completo" autocomplete="name"></div>
+            <div class="campo"><label for="edit-telefono">Teléfono</label><input type="tel" id="edit-telefono" placeholder="+57 300 000 0000" autocomplete="tel"></div>
+            <div class="campo todo"><label for="edit-direccion">Dirección de entrega</label><input type="text" id="edit-direccion" placeholder="Calle, barrio, ciudad" autocomplete="street-address"></div>
+            <div class="todo"><button class="btn btn--primario" type="button" onclick="guardarPerfil(this)"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg> Guardar datos personales</button></div>
+          </div>
+        </div>
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Cambiar correo electrónico</h2></div>
+          <div class="tarjeta-cuerpo rejilla-form">
+            <div class="campo"><label for="correo-actual-display">Correo actual</label><input type="email" id="correo-actual-display" disabled></div>
+            <div class="campo"><label for="edit-correo-nuevo">Nuevo correo</label><input type="email" id="edit-correo-nuevo" placeholder="nuevo@correo.com" autocomplete="email"></div>
+            <div class="campo todo"><label for="correo-pass-confirm">Confirma tu contraseña para cambiar el correo</label><input type="password" id="correo-pass-confirm" placeholder="Tu contraseña actual" autocomplete="current-password"></div>
+            <div class="todo"><button class="btn btn--primario" type="button" onclick="cambiarCorreo(this)"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#correo"/></svg> Actualizar correo</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion" id="sec-seguridad">
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Cambiar contraseña</h2></div>
+          <div class="tarjeta-cuerpo rejilla-form">
+            <div class="campo todo"><label for="pass-actual">Contraseña actual</label><input type="password" id="pass-actual" placeholder="Tu contraseña actual" autocomplete="current-password"></div>
+            <div class="campo"><label for="pass-nueva">Nueva contraseña</label><input type="password" id="pass-nueva" placeholder="Mínimo 8 caracteres" autocomplete="new-password"></div>
+            <div class="campo"><label for="pass-nueva2">Confirmar nueva contraseña</label><input type="password" id="pass-nueva2" placeholder="Repite la nueva contraseña" autocomplete="new-password"></div>
+            <div class="todo fortaleza"><div class="fortaleza-pista"><div id="pass-strength-bar"></div></div><span id="pass-strength-label" role="status"></span></div>
+            <div class="todo"><button class="btn btn--primario" type="button" onclick="cambiarPassword(this)"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg> Cambiar contraseña</button></div>
+          </div>
+        </div>
+        <div class="tarjeta tarjeta--peligro">
+          <div class="tarjeta-cabeza"><h2>Eliminar cuenta</h2></div>
+          <div class="tarjeta-cuerpo">
+            <p>Se borran tus datos personales, tu foto, tus favoritos y los comprobantes que enviaste. Tus compras quedan registradas sin tu nombre ni tus datos, porque la droguería debe conservar sus ventas. No se puede deshacer.</p>
+            <p class="campo-ayuda">Si tienes un pedido en curso o un pago en revisión, espera a que terminen antes de eliminar la cuenta.</p>
+            <button class="btn btn--peligro" type="button" onclick="eliminarCuenta()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#papelera"/></svg> Eliminar mi cuenta</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion" id="sec-suscripcion">
+        <div id="sus-panel-main"></div>
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Historial de pagos</h2></div>
+          <div class="tarjeta-cuerpo" id="sus-historial-body"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="visor-overlay" id="visor-overlay" role="dialog" aria-modal="true" aria-label="Visor de facturas">
+    <div class="visor-wrap" id="visor-wrap">
+      <span class="visor-counter" id="visor-counter"></span>
+      <button class="visor-nav-btn" id="visor-prev" type="button" aria-label="Factura anterior" disabled><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha-izq"/></svg></button>
+      <div class="visor-factura" id="visor-factura"></div>
+      <button class="visor-nav-btn" id="visor-next" type="button" aria-label="Siguiente factura"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></button>
+      <div class="visor-indicador" id="visor-indicador"></div>
+    </div>
+  </div>
+  <dialog class="dialogo" id="dialogo-eliminar" aria-labelledby="eliminar-titulo">
+    <form method="dialog" class="dialogo-forma" id="form-eliminar">
+      <div class="modal-cabeza"><h2 id="eliminar-titulo">Eliminar tu cuenta</h2></div>
+      <div class="modal-cuerpo">
+        <p>Escribe tu contraseña para confirmar. Esta acción no se puede deshacer.</p>
+        <div class="campo"><label for="eliminar-clave">Contraseña</label><input type="password" id="eliminar-clave" autocomplete="current-password"></div>
+        <p class="campo-error" id="eliminar-error" role="alert" hidden></p>
+      </div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" value="no" formnovalidate>Cancelar</button>
+        <button class="btn btn--peligro" value="si" id="btn-eliminar-si">Eliminar mi cuenta</button>
+      </div>
+    </form>
+  </dialog>
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script>
+    const esc = Seguridad.esc;
+    const $ = (id) => document.getElementById(id);
+    const fmt = (v) => formatPrecio(v);
+    const ESTADOS_PEDIDO = {
+      pendiente:  { texto: 'Pendiente', clase: 'insignia--aviso' },
+      en_proceso: { texto: 'En preparación', clase: 'insignia--azul' },
+      entregado:  { texto: 'Entregado', clase: 'insignia--exito' },
+      cancelado:  { texto: 'Anulado', clase: 'insignia--peligro' }
+    };
+    const ESTADOS_PAGO = {
+      pendiente: { texto: 'En revisión', clase: 'sus-estado-pendiente' },
+      aprobado:  { texto: 'Aprobado', clase: 'sus-estado-aprobado' },
+      rechazado: { texto: 'Rechazado', clase: 'sus-estado-rechazado' }
+    };
+
+    let cliente = Cuenta.cliente();
+    let pedidos = [];
+    let solicitudes = [];
+
+    function toast(msg, ok=true) {
+      const wrap = $('toast-wrap');
+      const el   = document.createElement('div');
+      el.className = 'toast' + (ok ? '' : ' err');
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3200);
+    }
+
+    async function conBoton(boton, tarea) {
+      if (boton) { boton.disabled = true; boton.setAttribute('aria-busy', 'true'); }
+      try { return await tarea(); }
+      finally { if (boton) { boton.disabled = false; boton.removeAttribute('aria-busy'); } }
+    }
+
+    function pintarCliente() {
+      const avatar = $('avatar-inicial');
+      avatar.innerHTML = cliente.foto
+        ? `<img src="${esc(cliente.foto)}?v=${Date.now()}" alt="Tu foto de perfil">`
+        : esc((cliente.nombre || '?')[0].toUpperCase());
+      $('perfil-nombre').textContent = cliente.nombre || 'Mi cuenta';
+      $('perfil-correo').textContent = cliente.correo || '';
+      $('edit-nombre').value    = cliente.nombre || '';
+      $('edit-telefono').value  = cliente.telefono || '';
+      $('edit-direccion').value = cliente.direccion || '';
+      $('correo-actual-display').value = cliente.correo || '';
+    }
+
+    function abrirPestana(sec) {
+      const tab = document.querySelector(`.tab[data-sec="${CSS.escape(sec)}"]`);
+      if (!tab) return;
+      document.querySelectorAll('.tab').forEach(t => { t.classList.toggle('activo', t === tab); t.setAttribute('aria-pressed', String(t === tab)); });
+      document.querySelectorAll('.seccion').forEach(s => s.classList.toggle('activa', s.id === 'sec-' + sec));
+      if (sec === 'favoritos') cargarFavoritos();
+      if (sec === 'suscripcion') cargarSuscripcion();
+    }
+    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+      abrirPestana(tab.dataset.sec);
+      history.replaceState(null, '', '#' + tab.dataset.sec);
+    }));
+
+    document.addEventListener('click', (e) => {
+      const boton = e.target.closest('[data-accion]');
+      if (!boton) return;
+      const { accion, id } = boton.dataset;
+      if (accion === 'ver-factura')      verFactura(id);
+      if (accion === 'quitar-favorito')  quitarFavorito(boton, Number(id));
+      if (accion === 'cerrar-visor')     cerrarVisor();
+      if (accion === 'imprimir-factura') window.open('/recibo?pedido=' + encodeURIComponent(visorPedidos[visorIndex].numero), '_blank', 'noopener');
+      if (accion === 'ir-visor')         irVisor(Number(id));
+      if (accion === 'cancelar-plan')    cancelarPlan(boton);
+    });
+
+    function cargando(contenedor) {
+      contenedor.innerHTML = '<p class="cargando" role="status">Cargando…</p>';
+    }
+    function errorCarga(contenedor, err, reintentar) {
+      contenedor.innerHTML = `<div class="vacio"><h3>No se pudo cargar</h3><p>${esc(err.message)}</p><button type="button" class="btn btn--secundario btn--sm">Intentar de nuevo</button></div>`;
+      contenedor.querySelector('button').addEventListener('click', reintentar);
+    }
+
+    async function cargarPedidos() {
+      const body = $('pedidos-body');
+      cargando(body);
+      try {
+        pedidos = await Api.pedir('/api/cuenta/pedidos');
+        renderPedidos();
+      } catch (err) { errorCarga(body, err, cargarPedidos); }
+    }
+
+    function renderPedidos() {
+      const body = $('pedidos-body');
+      $('pedidos-count').textContent = pedidos.length + ' pedido' + (pedidos.length !== 1 ? 's' : '');
+      if (!pedidos.length) {
+        body.innerHTML = `<div class="vacio"><div class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#recibo"/></svg></div><h3>Sin pedidos todavía</h3><p>Cuando hagas tu primer pedido aparecerá aquí.</p><a class="btn btn--secundario btn--sm" href="/medicamentos">Ver catálogo</a></div>`;
+        return;
+      }
+      body.innerHTML = pedidos.map(p => {
+        const estado = ESTADOS_PEDIDO[p.estado] || { texto: p.estado, clase: '' };
+        return `<div class="pedido-card">
+          <div class="pedido-top">
+            <span class="pedido-id">${esc(p.numero)}</span>
+            <span class="pedido-fecha">${esc(formatFecha(p.fecha, true))}</span>
+            <span class="pedido-total num">${fmt(p.total)}</span>
+          </div>
+          <div class="pedido-items">
+            ${p.productos.map(item => `
+              <div class="pedido-item-row">
+                <span class="pedido-item-nombre">${esc(item.nombre)}</span>
+                <span class="pedido-item-qty">x${esc(item.cantidad)} · ${fmt(item.subtotal)}</span>
+              </div>`).join('')}
+          </div>
+          <div class="pedido-footer">
+            <span class="insignia ${estado.clase}">${esc(estado.texto)}</span>
+            <span class="badge ${p.modalidad === 'domicilio' ? 'badge-domicilio' : 'badge-tienda'}">${p.modalidad === 'domicilio' ? 'Domicilio' : 'Recoger en tienda'}</span>
+            <button type="button" class="btn-ver-factura" data-accion="ver-factura" data-id="${esc(p.numero)}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Ver detalle
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    let favoritosCargados = false;
+    async function cargarFavoritos(forzar) {
+      if (favoritosCargados && !forzar) return;
+      const grid = $('favoritos-grid');
+      cargando(grid);
+      try {
+        const ids = await Api.pedir('/api/cuenta/favoritos');
+        favoritosCargados = true;
+        renderFavoritos(ids);
+      } catch (err) { errorCarga(grid, err, () => cargarFavoritos(true)); }
+    }
+
+    function productoPorId(id) {
+      const m = MEDICAMENTOS.find(x => x.id === id);
+      if (m) return { tipo: 'medicamento', nombre: m.nombre, precio: Math.min(...m.presentaciones.map(p => p.precio)), desde: m.presentaciones.length > 1, url: '/medicamentos?producto=' + id };
+      const v = VARIEDADES.find(x => x.id === id);
+      return v ? { tipo: 'variedad', nombre: v.nombre, precio: v.precio, desde: false, url: '/variedades?producto=' + id } : null;
+    }
+
+    function renderFavoritos(ids) {
+      const grid = $('favoritos-grid');
+      const lista = ids.map(id => ({ id, p: productoPorId(Number(id)) })).filter(f => f.p);
+      if (!lista.length) {
+        grid.innerHTML = `<div class="vacio vacio--ancho"><div class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#corazon"/></svg></div><h3>Sin favoritos aún</h3><p>Abre un producto y toca «Guardar en favoritos».</p><a class="btn btn--secundario btn--sm" href="/medicamentos">Explorar productos</a></div>`;
+        return;
+      }
+      grid.innerHTML = lista.map(({ id, p }) => `
+        <div class="fav-card">
+          <button type="button" class="btn-quitar-fav" data-accion="quitar-favorito" data-id="${esc(id)}" aria-label="Quitar ${esc(p.nombre)} de favoritos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <a class="fav-nombre" href="${esc(p.url)}">${esc(p.nombre)}</a>
+          <div class="fav-precio num">${p.desde ? 'Desde ' : ''}${fmt(Suscripcion.aplicar(p.precio))}</div>
+        </div>`).join('');
+    }
+
+    async function quitarFavorito(boton, id) {
+      try {
+        await conBoton(boton, () => Api.pedir('/api/cuenta/favoritos/' + id, { metodo: 'DELETE' }));
+        boton.closest('.fav-card').remove();
+        if (!$('favoritos-grid').querySelector('.fav-card')) renderFavoritos([]);
+        toast('Quitado de tus favoritos');
+      } catch (err) { toast(err.message, false); }
+    }
+
+    async function guardarPerfil(boton) {
+      const nombre    = $('edit-nombre').value.trim();
+      const telefono  = $('edit-telefono').value.trim();
+      const direccion = $('edit-direccion').value.trim();
+      if (!nombre)    { toast('El nombre es obligatorio', false); return; }
+      if (!telefono)  { toast('El teléfono es obligatorio', false); return; }
+      if (!direccion) { toast('La dirección es obligatoria', false); return; }
+      try {
+        const r = await conBoton(boton, () => Api.pedir('/api/cuenta', { metodo: 'PUT', datos: { nombre, telefono, direccion } }));
+        cliente = { ...cliente, ...r.cliente, foto: cliente.foto };
+        pintarCliente();
+        toast('Datos personales actualizados');
+      } catch (err) { toast(err.message, false); }
+    }
+
+    async function cambiarCorreo(boton) {
+      const correo = $('edit-correo-nuevo').value.trim().toLowerCase();
+      const clave  = $('correo-pass-confirm').value;
+      if (!correo || !clave) { toast('Completa todos los campos', false); return; }
+      if (!correo.includes('@')) { toast('Ingresa un correo válido', false); return; }
+      try {
+        const r = await conBoton(boton, () => Api.pedir('/api/cuenta/correo', { metodo: 'POST', datos: { correo, clave } }));
+        cliente = { ...cliente, correo: r.cliente.correo };
+        pintarCliente();
+        $('edit-correo-nuevo').value = '';
+        $('correo-pass-confirm').value = '';
+        toast('Correo actualizado. Úsalo la próxima vez que inicies sesión.');
+      } catch (err) { toast(err.message, false); }
+    }
+
+    async function cambiarFoto(entrada) {
+      const archivo = entrada.files[0];
+      entrada.value = '';
+      if (!archivo) return;
+      if (!/^image\/(jpeg|png|webp)$/.test(archivo.type)) { toast('La foto debe ser JPG, PNG o WEBP', false); return; }
+      if (archivo.size > 3 * 1024 * 1024) { toast('La foto no puede superar 3 MB', false); return; }
+      const datos = new FormData();
+      datos.append('foto', archivo);
+      try {
+        await conBoton($('btn-foto'), () => Api.pedir('/api/cuenta/foto', { metodo: 'POST', formulario: datos }));
+        cliente = { ...cliente, foto: '/api/cuenta/foto' };
+        pintarCliente();
+        toast('Foto actualizada');
+      } catch (err) { toast(err.message, false); }
+    }
+
+    async function cambiarPassword(boton) {
+      const actual = $('pass-actual').value;
+      const nueva  = $('pass-nueva').value;
+      const nueva2 = $('pass-nueva2').value;
+      if (!actual || !nueva || !nueva2) { toast('Completa todos los campos', false); return; }
+      if (nueva.length < 8)  { toast('La nueva contraseña debe tener mínimo 8 caracteres', false); return; }
+      if (nueva !== nueva2)  { toast('Las contraseñas no coinciden', false); return; }
+      if (actual === nueva)  { toast('La nueva contraseña debe ser diferente a la actual', false); return; }
+      try {
+        await conBoton(boton, () => Api.pedir('/api/cuenta/clave', { metodo: 'POST', datos: { actual, nueva } }));
+        ['pass-actual', 'pass-nueva', 'pass-nueva2'].forEach(id => { $(id).value = ''; });
+        $('pass-strength-bar').style.width = '0%';
+        $('pass-strength-label').textContent = '';
+        toast('Contraseña actualizada');
+      } catch (err) { toast(err.message, false); }
+    }
+
+    function eliminarCuenta() {
+      $('eliminar-clave').value = '';
+      $('eliminar-error').hidden = true;
+      $('dialogo-eliminar').showModal();
+    }
+    $('form-eliminar').addEventListener('submit', async (e) => {
+      if (e.submitter && e.submitter.value === 'no') return;
+      e.preventDefault();
+      const clave = $('eliminar-clave').value;
+      if (!clave) { $('eliminar-error').textContent = 'Escribe tu contraseña.'; $('eliminar-error').hidden = false; return; }
+      try {
+        await conBoton($('btn-eliminar-si'), () => Api.pedir('/api/cuenta/eliminar', { metodo: 'POST', datos: { clave } }));
+        Carrito.vaciar();
+        $('dialogo-eliminar').close();
+        toast('Tu cuenta fue eliminada.');
+        setTimeout(() => { window.location.href = '/'; }, 1400);
+      } catch (err) {
+        $('eliminar-error').textContent = err.message;
+        $('eliminar-error').hidden = false;
+      }
+    });
+
+    let visorPedidos = [];
+    let visorIndex   = 0;
+    let touchStartX  = 0;
+
+    function verFactura(numero) {
+      if (!pedidos.length) return;
+      visorPedidos = pedidos;
+      visorIndex   = Math.max(0, pedidos.findIndex(p => p.numero === numero));
+      $('visor-overlay').classList.add('visible');
+      document.body.style.overflow = 'hidden';
+      renderVisor('none');
+      actualizarNavVisor();
+      Experiencia.atrapar($('visor-overlay'));
+    }
+
+    function cerrarVisor() {
+      $('visor-overlay').classList.remove('visible');
+      document.body.style.overflow = '';
+      Experiencia.soltar($('visor-overlay'));
+    }
+
+    function renderVisor(direccion) {
+      const p = visorPedidos[visorIndex];
+      const estado = ESTADOS_PEDIDO[p.estado] || { texto: p.estado, clase: '' };
+      $('visor-factura').innerHTML = `
+        <div class="visor-header">
+          <div class="visor-header-info">
+            <div class="visor-num-pedido">Pedido ${esc(p.numero)}</div>
+            <div class="visor-total num">${fmt(p.total)}</div>
+            <div class="visor-fecha">${esc(formatFecha(p.fecha, true))} · ${esc(estado.texto)}</div>
+          </div>
+          <button type="button" class="btn-cerrar-visor" data-accion="cerrar-visor" aria-label="Cerrar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="visor-body">
+          <div class="visor-modalidad ${p.modalidad === 'domicilio' ? 'domicilio' : 'tienda'}">
+            ${p.modalidad === 'domicilio' ? 'Domicilio: ' + esc(p.direccion || '') : 'Recoger en tienda'}
+          </div>
+          <div class="visor-productos-titulo">Productos del pedido</div>
+          ${p.productos.map(item => `
+            <div class="visor-producto-row">
+              <span class="visor-prod-nombre">${esc(item.nombre)}</span>
+              <div class="visor-prod-detalle">
+                <span class="visor-prod-qty">x${esc(item.cantidad)}</span>
+                <span class="visor-prod-precio num">${fmt(item.subtotal)}</span>
+              </div>
+            </div>`).join('')}
+          ${Number(p.descuento) > 0 ? `<div class="visor-producto-row"><span class="visor-prod-nombre">Descuento del plan (${esc(Number(p.descuentoPorcentaje))}%)</span><span class="visor-prod-precio num">-${fmt(p.descuento)}</span></div>` : ''}
+          ${p.modalidad === 'domicilio' ? `<div class="visor-producto-row"><span class="visor-prod-nombre">Domicilio${p.distanciaKm != null ? ' (' + esc(String(p.distanciaKm).replace('.', ',')) + ' km)' : ''}</span><span class="visor-prod-precio num">${Number(p.domicilio) > 0 ? fmt(p.domicilio) : p.domicilioGratis ? 'Gratis' : 'Por confirmar'}</span></div>` : ''}
+          <div class="visor-total-row">
+            <span class="visor-total-label">${p.estado === 'entregado' ? 'Total pagado' : 'Total a pagar'}</span>
+            <span class="visor-total-valor num">${fmt(p.total)}</span>
+          </div>
+        </div>
+        <div class="visor-footer">
+          <button type="button" class="btn-imprimir-visor" data-accion="imprimir-factura">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Abrir recibo para imprimir
+          </button>
+        </div>`;
+      const el = $('visor-factura');
+      el.classList.remove('slide-izq', 'slide-der');
+      if (direccion === 'izq' || direccion === 'der') { void el.offsetWidth; el.classList.add('slide-' + direccion); }
+      $('visor-counter').textContent = `${visorIndex + 1} de ${visorPedidos.length}`;
+      $('visor-indicador').innerHTML = visorPedidos.map((_, i) =>
+        `<button type="button" class="visor-punto ${i === visorIndex ? 'activo' : ''}" data-accion="ir-visor" data-id="${i}" aria-label="Ir al pedido ${i + 1}"></button>`).join('');
+    }
+
+    function actualizarNavVisor() {
+      $('visor-prev').disabled = visorIndex === 0;
+      $('visor-next').disabled = visorIndex === visorPedidos.length - 1;
+    }
+    function irVisor(idx) {
+      const dir = idx > visorIndex ? 'izq' : 'der';
+      visorIndex = idx;
+      renderVisor(dir);
+      actualizarNavVisor();
+    }
+    function moverVisor(paso) {
+      const nuevo = visorIndex + paso;
+      if (nuevo < 0 || nuevo >= visorPedidos.length) return;
+      irVisor(nuevo);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (!$('visor-overlay').classList.contains('visible')) return;
+      if (e.key === 'ArrowRight') moverVisor(1);
+      else if (e.key === 'ArrowLeft') moverVisor(-1);
+      else if (e.key === 'Escape') cerrarVisor();
+    });
+    $('visor-overlay').addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    $('visor-overlay').addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) >= 40) moverVisor(diff > 0 ? 1 : -1);
+    }, { passive: true });
+    $('visor-overlay').addEventListener('click', (e) => { if (e.target === $('visor-overlay')) cerrarVisor(); });
+    $('visor-prev').addEventListener('click', () => moverVisor(-1));
+    $('visor-next').addEventListener('click', () => moverVisor(1));
+
+    function cerrarSesion() {
+      Cuenta.salir('/');
+    }
+
+    $('pass-nueva').addEventListener('input', function() {
+      const pass  = this.value;
+      let score   = 0;
+      if (pass.length >= 8)  score++;
+      if (pass.length >= 10) score++;
+      if (/[A-Z]/.test(pass)) score++;
+      if (/[0-9]/.test(pass)) score++;
+      if (/[^A-Za-z0-9]/.test(pass)) score++;
+      const colors = ['', 'var(--burgundy)', 'var(--burgundy)', 'var(--amber)', 'var(--emerald)', 'var(--emerald-tinta)'];
+      const labels = ['', 'Muy débil', 'Débil', 'Regular', 'Fuerte', 'Muy fuerte'];
+      $('pass-strength-bar').style.width      = (score / 5) * 100 + '%';
+      $('pass-strength-bar').style.background = colors[score] || 'var(--burgundy)';
+      $('pass-strength-label').textContent    = pass ? (labels[score] || '') : '';
+      $('pass-strength-label').style.color    = colors[score] || 'var(--tinta-3)';
+    });
+
+    async function cargarSuscripcion() {
+      const panel = $('sus-panel-main');
+      cargando(panel);
+      try {
+        const [estado, sols] = await Promise.all([Cuenta.recargar(), Api.pedir('/api/cuenta/solicitudes')]);
+        solicitudes = sols;
+        if (estado.cliente) cliente = { ...cliente, ...estado.cliente };
+        renderSuscripcion();
+      } catch (err) { errorCarga(panel, err, cargarSuscripcion); }
+    }
+
+    function renderSuscripcion() {
+      const panel = $('sus-panel-main');
+      const sus = Suscripcion.obtener();
+      const pendiente = solicitudes.find(s => s.estado === 'pendiente');
+      const ultima = solicitudes[0];
+      let html = '';
+
+      if (pendiente) {
+        html += `<div class="sus-panel-pendiente">
+          <h3>Pago en revisión</h3>
+          <p>La droguería está revisando tu pago del plan <strong>${esc(pendiente.plan)}</strong> (${fmt(pendiente.monto)}).
+             Cuando lo apruebe, tu descuento se aplicará solo.</p>
+        </div>`;
+      }
+
+      if (sus) {
+        const dias = Suscripcion.diasRestantes();
+        const cancelada = sus.estado === 'cancelada';
+        html += `<div class="sus-panel-activo">
+          <div class="sus-panel-header">
+            <div>
+              <div class="sus-panel-ante">${cancelada ? 'Plan cancelado' : 'Plan activo'}</div>
+              <div class="sus-panel-nombre">Plan ${esc(sus.nombre)}</div>
+            </div>
+            <div class="sus-panel-badge"><span class="punto ${cancelada ? '' : 'punto--vivo'}"></span>${cancelada ? 'Hasta que venza' : 'Activo'}</div>
+          </div>
+          ${cancelada ? `<div class="sus-panel-alerta visible">Cancelaste tu plan. Conservas el descuento hasta el ${esc(formatFecha(sus.vence))}; después no se renueva.</div>`
+            : dias !== null && dias <= 5 ? `<div class="sus-panel-alerta visible">Tu plan vence en ${dias} día${dias !== 1 ? 's' : ''}. Renuévalo para no perder tu descuento.</div>` : ''}
+          <div class="sus-panel-info">
+            <div class="sus-panel-dato">Descuento<strong>${esc(sus.descuento)}%</strong></div>
+            <div class="sus-panel-dato">Desde<strong>${esc(formatFecha(sus.inicio))}</strong></div>
+            <div class="sus-panel-dato">Vence<strong>${esc(formatFecha(sus.vence))}</strong></div>
+            ${dias !== null ? `<div class="sus-panel-dato">Días restantes<strong>${dias} día${dias !== 1 ? 's' : ''}</strong></div>` : ''}
+          </div>
+          <div class="sus-acciones">
+            ${pendiente ? '' : `<a class="btn-sus-renovar" href="/suscripciones?plan=${esc(sus.plan)}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+              Renovar plan</a>`}
+            ${cancelada ? '' : '<button type="button" class="btn-sus-cancelar" data-accion="cancelar-plan">Cancelar suscripción</button>'}
+          </div>
+        </div>`;
+      } else if (!pendiente) {
+        const rechazada = ultima && ultima.estado === 'rechazado';
+        html += rechazada
+          ? `<div class="sus-panel-pendiente sus-panel-peligro">
+              <h3>Tu último pago no fue aprobado</h3>
+              <p>${ultima.motivo ? 'Motivo: ' + esc(ultima.motivo) + '. ' : ''}Puedes enviarlo de nuevo o escribirnos por WhatsApp.</p>
+              <a href="/suscripciones" class="btn-ver-planes">Ver planes</a>
+            </div>`
+          : `<div class="sus-panel-vacio">
+              <h3>Sin plan activo</h3>
+              <p>Con un plan tienes descuento en todos los productos de la tienda.</p>
+              <a href="/suscripciones" class="btn-ver-planes">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                Ver planes disponibles
+              </a>
+            </div>`;
+      }
+      panel.innerHTML = html;
+      renderHistorialSolicitudes();
+    }
+
+    async function cancelarPlan(boton) {
+      const sus = Suscripcion.obtener();
+      if (!sus) return;
+      const si = await Experiencia.confirmar({
+        titulo: 'Cancelar tu plan',
+        texto: `Conservas el ${sus.descuento}% de descuento hasta el ${formatFecha(sus.vence)}. Después el plan no se renueva.`,
+        accion: 'Cancelar el plan', peligro: true
+      });
+      if (!si) return;
+      try {
+        await conBoton(boton, () => Api.pedir('/api/cuenta/suscripcion/cancelar', { metodo: 'POST' }));
+        toast('Plan cancelado. Tu descuento sigue hasta que venza.');
+        cargarSuscripcion();
+      } catch (err) { toast(err.message, false); }
+    }
+
+    function renderHistorialSolicitudes() {
+      const body = $('sus-historial-body');
+      if (!solicitudes.length) {
+        body.innerHTML = '<p>Todavía no has enviado pagos de planes.</p>';
+        return;
+      }
+      body.innerHTML = solicitudes.map(s => {
+        const e = ESTADOS_PAGO[s.estado] || { texto: s.estado, clase: '' };
+        return `<div class="sus-historial-item">
+          <div>
+            <div class="historial-plan">Plan ${esc(s.plan)} · <span class="num">${fmt(s.monto)}</span></div>
+            <div class="historial-meta">${esc(s.metodo)}${s.estado === 'rechazado' && s.motivo ? ' · ' + esc(s.motivo) : ''}</div>
+          </div>
+          <div class="historial-estado">
+            <div class="${esc(e.clase)}">${esc(e.texto)}</div>
+            <div class="historial-meta">${esc(formatFecha(s.fecha))}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+      if (!protegerRuta()) return;
+      pintarCliente();
+      cargarPedidos();
+      abrirPestana(window.location.hash.slice(1) || 'pedidos');
+    });
+    window.addEventListener('hashchange', () => abrirPestana(window.location.hash.slice(1) || 'pedidos'));
+  </script>
+</body>
+</html>
