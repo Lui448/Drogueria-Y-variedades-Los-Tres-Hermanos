@@ -14,22 +14,22 @@
 
 **[Ver el sitio publicado](https://jhean1.github.io/DrogueriaYvariedadesLosTresHermanos/)**
 
-[Capturas](#-capturas) · [Funcionalidades](#-funcionalidades) · [Equipo y roles](#-equipo-y-roles) · [Arquitectura](#-arquitectura) · [Instalación](#-instalación-y-ejecución) · [Seguridad](#-seguridad) · [Limitaciones](#%EF%B8%8F-limitaciones-actuales)
+[Capturas](#capturas) · [Funcionalidades](#funcionalidades) · [Equipo y roles](#equipo-y-roles) · [Arquitectura](#arquitectura) · [Instalación](#instalación-y-ejecución) · [Seguridad](#seguridad) · [Limitaciones](#limitaciones-actuales)
 
 <img src="docs/imagenes/inicio.png" alt="Página de inicio de la droguería" width="850">
 
 </div>
 
-## 📌 Sobre el proyecto
+## Sobre el proyecto
 
 Este proyecto de aula lleva a la web la atención de una droguería de barrio. Un cliente puede explorar los productos, armar su carrito, elegir entre domicilio o recoger en tienda y hacer su pedido desde su cuenta. La droguería lo ve en el panel, lo prepara y lo entrega; el pago se hace en efectivo al recibirlo.
 
 Los clientes también pueden suscribirse a un plan mensual para obtener descuentos. El administrador revisa los comprobantes de pago y activa los planes desde su panel.
 
 > [!IMPORTANT]
-> Las cuentas de clientes, los pedidos, los pagos de planes y el catálogo se guardan en MySQL (base `drogueria`), así que **todo eso solo funciona con el servidor Spring Boot en marcha**. El [sitio de GitHub Pages](https://jhean1.github.io/DrogueriaYvariedadesLosTresHermanos/) es una vista previa estática del catálogo: allí no se pueden crear cuentas ni hacer pedidos en línea (se pide por WhatsApp). Consulta las [limitaciones actuales](#%EF%B8%8F-limitaciones-actuales).
+> Las cuentas de clientes, los pedidos, los pagos de planes y el catálogo se guardan en MySQL (base `drogueria`), así que **todo eso solo funciona con el servidor Spring Boot en marcha**. El [sitio de GitHub Pages](https://jhean1.github.io/DrogueriaYvariedadesLosTresHermanos/) es una vista previa estática del catálogo: allí no se pueden crear cuentas ni hacer pedidos en línea (se pide por WhatsApp). Consulta las [limitaciones actuales](#limitaciones-actuales).
 
-## 📸 Capturas
+## Capturas
 
 > [!NOTE]
 > Las capturas son de una versión anterior con **datos ficticios**: todavía no muestran las fotos de los productos, los precios nuevos de los planes ni el cálculo del domicilio.
@@ -71,47 +71,47 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 |:---:|:---:|
 | <img src="docs/imagenes/movil-inicio.png" alt="Inicio en un celular" width="240"> | <img src="docs/imagenes/movil-medicamentos.png" alt="Catálogo en un celular" width="240"> |
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 ### Para clientes
 
-- 🔎 **Búsqueda central:** visible en toda la tienda, con sugerencias al escribir por nombre, marca, principio activo o categoría.
-- 💊 **Catálogo:** tarjetas compactas y ficha de producto con presentación, concentración, marca y precio.
-- 🌗 **Modo claro y oscuro:** interruptor visible que recuerda la preferencia, con movimiento sutil que respeta la opción de menos animación.
-- 🖼️ **Imágenes de productos:** foto exacta del producto o, si no hay, una imagen parecida marcada como «Imagen de referencia». El personal autorizado sube las fotos propias desde el catálogo.
-- 🧭 **Guía de compra:** cuatro pasos en el inicio que se dibujan al bajar por la página.
-- 🛒 **Carrito y pedido:** carrito persistente, entrega a domicilio o recogida en tienda. El servidor calcula precios, descuento y domicilio con la base de datos.
-- 🛵 **Domicilio según la distancia:** el cliente comparte su ubicación y el valor se calcula desde la droguería ($3.000 hasta 1 km y $1.000 por cada km adicional, hasta 8 km). Con el plan Premium es gratis. Si no comparte la ubicación, la droguería le confirma el valor.
-- 🧾 **Recibo e historial:** recibo de cada pedido con su estado y consulta de compras anteriores desde **Mi cuenta**.
-- ❤️ **Favoritos:** el cliente guarda productos desde su ficha y los ve en **Mi cuenta**.
-- ⭐ **Suscripciones:** descuento automático en toda la tienda cuando el plan está aprobado y vigente.
-- 💳 **Pago de planes:** efectivo en la tienda, o en línea con envío de comprobante por los medios que la droguería tenga configurados (Nequi, Daviplata, PSE o Bancolombia).
-- 👤 **Cuenta personal:** foto, edición de datos, cambio de correo y contraseña, y eliminación de la cuenta (se borran los datos personales y se conservan las ventas sin ellos).
+- **Búsqueda central:** visible en toda la tienda, con sugerencias al escribir por nombre, marca, principio activo o categoría.
+- **Catálogo:** tarjetas compactas y ficha de producto con presentación, concentración, marca y precio.
+- **Modo claro y oscuro:** interruptor visible que recuerda la preferencia, con movimiento sutil que respeta la opción de menos animación.
+- **Imágenes de productos:** foto exacta del producto o, si no hay, una imagen parecida marcada como «Imagen de referencia». El personal autorizado sube las fotos propias desde el catálogo.
+- **Guía de compra:** cuatro pasos en el inicio que se dibujan al bajar por la página.
+- **Carrito y pedido:** carrito persistente, entrega a domicilio o recogida en tienda. El servidor calcula precios, descuento y domicilio con la base de datos.
+- **Domicilio según la distancia:** el cliente comparte su ubicación y el valor se calcula desde la droguería ($3.000 hasta 1 km y $1.000 por cada km adicional, hasta 8 km). Con el plan Premium es gratis. Si no comparte la ubicación, la droguería le confirma el valor.
+- **Recibo e historial:** recibo de cada pedido con su estado y consulta de compras anteriores desde **Mi cuenta**.
+- **Favoritos:** el cliente guarda productos desde su ficha y los ve en **Mi cuenta**.
+- **Suscripciones:** descuento automático en toda la tienda cuando el plan está aprobado y vigente.
+- **Pago de planes:** efectivo en la tienda, o en línea con envío de comprobante por los medios que la droguería tenga configurados (Nequi, Daviplata, PSE o Bancolombia).
+- **Cuenta personal:** foto, edición de datos, cambio de correo y contraseña, y eliminación de la cuenta (se borran los datos personales y se conservan las ventas sin ellos).
 
 ### Para administradores
 
-- 📊 **Resumen:** indicadores y accesos rápidos según el rol.
-- 🧴 **Productos y categorías:** crear, editar, retirar y volver a publicar medicamentos y variedades, con foto, validación y auditoría.
-- 📦 **Pedidos:** búsqueda y filtros; preparar, marcar como entregado (descuenta el inventario por vencimiento) o anular con motivo.
-- ✅ **Pagos:** revisión de comprobantes y aprobación, o rechazo con motivo que el cliente ve en su cuenta.
-- 👥 **Clientes:** búsqueda y creación de cuentas.
-- 🏪 **Pagos en tienda:** activación manual del plan cuando el cliente paga en efectivo.
-- 🔑 **Usuarios y permisos:** crea roles y cuentas, asigna o revoca permisos por rol o por persona y activa o desactiva cuentas; Spring Security lo valida en cada petición.
-- 🕵️ **Auditoría:** historial de inicios de sesión y cambios de accesos.
-- 🧭 **Módulos planificados:** inventario, ventas, compras, caja, reportes, auditoría y notificaciones, marcados como *en desarrollo* y sin acciones simuladas.
+- **Resumen:** indicadores y accesos rápidos según el rol.
+- **Productos y categorías:** crear, editar, retirar y volver a publicar medicamentos y variedades, con foto, validación y auditoría.
+- **Pedidos:** búsqueda y filtros; preparar, marcar como entregado (descuenta el inventario por vencimiento) o anular con motivo.
+- **Pagos:** revisión de comprobantes y aprobación, o rechazo con motivo que el cliente ve en su cuenta.
+- **Clientes:** búsqueda y creación de cuentas.
+- **Pagos en tienda:** activación manual del plan cuando el cliente paga en efectivo.
+- **Usuarios y permisos:** crea roles y cuentas, asigna o revoca permisos por rol o por persona y activa o desactiva cuentas; Spring Security lo valida en cada petición.
+- **Auditoría:** historial de inicios de sesión y cambios de accesos.
+- **Módulos planificados:** inventario, ventas, compras, caja, reportes, auditoría y notificaciones, marcados como *en desarrollo* y sin acciones simuladas.
 
 ### Planes de suscripción
 
 | Plan | Precio mensual | Descuento | Domicilio prioritario | Domicilio gratis | Ofertas anticipadas y acceso exclusivo |
 |---|---:|:---:|:---:|:---:|:---:|
-| 🌱 Básico | $9.900 COP | 3 % | — | — | — |
-| 💊 Estándar | $19.900 COP | 5 % | — | — | — |
-| 🏥 Regular | $29.900 COP | 10 % | ✅ | — | — |
-| 👑 Premium | $39.900 COP | 15 % | ✅ | ✅ | ✅ |
+| Básico | $9.900 COP | 3 % | — | — | — |
+| Estándar | $19.900 COP | 5 % | — | — | — |
+| Regular | $29.900 COP | 10 % | Sí | — | — |
+| Premium | $39.900 COP | 15 % | Sí | Sí | Sí |
 
 Los precios, los descuentos y la tarifa del domicilio están en la base de datos (tablas `plan_suscripcion` y `configuracion`), así que se pueden ajustar sin cambiar el código.
 
-## 👥 Equipo y roles
+## Equipo y roles
 
 ### Cómo entra el equipo al panel
 
@@ -134,7 +134,7 @@ Las cuentas de **clientes** son otra cosa: se crean en `/registro` (o desde el p
 
 Desde **Usuarios y permisos** se pueden crear roles nuevos y quitar o dar permisos a una persona en particular. Inventario, ventas de mostrador, compras, caja y reportes ya tienen sus permisos y su lugar en el panel, pero todavía están en desarrollo.
 
-## 🛠️ Tecnologías
+## Tecnologías
 
 | Capa | Tecnología |
 |---|---|
@@ -147,14 +147,14 @@ Desde **Usuarios y permisos** se pueden crear roles nuevos y quitar o dar permis
 | Construcción | Maven (incluye Maven Wrapper) |
 | Pruebas | JUnit 5, Spring MockMvc y Spring Security Test |
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 El servidor entrega las páginas, guarda cuentas, pedidos y pagos en MySQL y protege el panel. El navegador solo guarda el carrito y el tema de color.
 
 ```mermaid
 flowchart LR
-    C["🧑 Cliente"] --> N
-    A["🛡️ Administrador"] --> N
+    C["Cliente"] --> N
+    A["Administrador"] --> N
 
     subgraph N["Navegador"]
         V["Páginas HTML y JavaScript"]
@@ -250,7 +250,7 @@ sequenceDiagram
 | `/admin/accesos` | Usuarios y permisos | **Con `users.manage` o `roles.manage`** |
 | `/admin/modulos/auditoria` | Historial de acciones | **Solo con `audit.view`** |
 
-## 🚀 Instalación y ejecución
+## Instalación y ejecución
 
 ### Requisitos
 
@@ -332,7 +332,7 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 .\mvnw.cmd test    # En Linux o macOS: ./mvnw test
 ```
 
-## 🔒 Seguridad
+## Seguridad
 
 | Medida | Qué protege |
 |---|---|
@@ -350,7 +350,7 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 | Precio del plan tomado de la base de datos | Impide aprobar un plan con precio o descuento alterados |
 | CSP y otras cabeceras de seguridad | Limitan scripts externos y el envío de datos a otros dominios, y evitan que el sitio se inserte en otras páginas |
 
-## ⚠️ Limitaciones actuales
+## Limitaciones actuales
 
 - **Cuentas de pago sin configurar:** mientras la droguería no escriba sus cuentas reales en la configuración de la base, los planes solo se pagan en efectivo en la tienda.
 - **Domicilio en línea recta:** la distancia se mide en línea recta desde la droguería, no por calles; el valor real del recorrido puede ser algo mayor. El punto de la droguería (`tienda_latitud` y `tienda_longitud` en `configuracion`) es aproximado: conviene reemplazarlo por el exacto.
@@ -361,7 +361,7 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 - **Fotos subidas desde el panel:** se guardan en `datos/fotos` del servidor. Para que también aparezcan en GitHub Pages hay que copiarlas a `fotos-productos/` y anotarlas en `docs/base-de-datos/datos/imagenes-productos.csv`.
 - **Imágenes del catálogo:** 99 productos tienen su foto exacta y 272 una imagen de referencia, marcada así en la tienda; están en `fotos-productos/` y la relación con cada producto en `docs/base-de-datos/datos/imagenes-productos.csv`. Las imágenes provienen de catálogos públicos de tiendas colombianas; lo ideal es reemplazarlas por fotos propias desde el panel. Los productos restantes usan ilustraciones.
 
-## 🗺️ Próximos pasos
+## Próximos pasos
 
 - [ ] Reemplazar las imágenes de referencia por fotos propias de la droguería.
 - [x] Incorporar una base de datos y una API en el servidor.
@@ -370,7 +370,7 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 - [ ] Construir los módulos de inventario, ventas, compras, caja, reportes y auditoría.
 - [ ] Publicar el sitio con HTTPS.
 
-## 🌐 Publicación en GitHub Pages
+## Publicación en GitHub Pages
 
 Cada cambio en `master` ejecuta las pruebas, genera una copia estática de la tienda con `scripts/generar_sitio.py` y la publica en la rama `gh-pages`.
 
@@ -378,11 +378,11 @@ GitHub Pages solo sirve archivos estáticos, así que el sitio publicado funcion
 
 | Función | En GitHub Pages | Con el servidor Spring Boot |
 |---|---|---|
-| Catálogo y carrito | ✅ | ✅ |
+| Catálogo y carrito | Sí | Sí |
 | Pedidos | Por WhatsApp | En línea, con recibo y seguimiento |
-| Cuentas de cliente | ❌ No hay servidor | ✅ Guardadas en MySQL |
+| Cuentas de cliente | No hay servidor | Guardadas en MySQL |
 | Suscripciones | Se solicitan por WhatsApp | Formulario de pago con revisión en el panel |
-| Panel de administración y roles | ❌ No se publica | ✅ |
+| Panel de administración y roles | No se publica | Sí |
 
 Para generar el sitio en tu equipo:
 
@@ -391,17 +391,13 @@ Para generar el sitio en tu equipo:
 python scripts/generar_sitio.py --salida _sitio
 ```
 
-## 🌿 Ramas
+## Ramas
 
 | Rama | Propósito |
 |---|---|
 | `master` | Versión principal del proyecto |
 | `frontend` | Rama de trabajo; se integra en `master` cuando está probada |
 | `gh-pages` | Sitio estático generado automáticamente; no se edita a mano |
-
-## 👤 Autor
-
-Desarrollado por [**@jhean1**](https://github.com/jhean1) como proyecto de aula.
 
 ---
 
